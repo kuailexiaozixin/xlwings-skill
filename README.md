@@ -12,7 +12,7 @@
 - `skills/xlwings/docs/` — 补充文档
 - `skills/xlwings/templates/` — 工程模板
 - `skills/xlwings/dist/` — 构建产物
-- `skills/xlwings/manifest.json` / `SYNCLOG.md` — 第三方上游快照的跟踪清单（`ref` + `pinned_sha`）与同步历史，配合 `scripts/sync_upstream.py` 使用
+- `skills/xlwings/manifest.json` / `SYNCLOG.md` — 第三方上游快照的跟踪清单（`ref` + `pinned_sha`，当前 19 路：18 路 git + 1 路官网镜像）与同步历史，配合 `scripts/sync_upstream.py` 使用
 
 ## 第三方资源（占位说明）
 
@@ -25,6 +25,7 @@
 | `skills/xlwings/xlwings/` | <https://github.com/xlwings/xlwings> · <https://www.xlwings.org/> |
 | `skills/xlwings/xlwings-server/` | <https://github.com/xlwings/xlwings-server> · <https://server.xlwings.org/> |
 | `skills/xlwings/xlwings-lite/` | <https://github.com/xlwings/xlwings-lite> · <https://docs.xlwings.org/en/latest/lite.html> |
+| `skills/xlwings/xlwings-sqlookup/` | <https://github.com/xlwings/xlwings-sqlookup> · xlwings Lite 官方插件（`=SQLOOKUP` 单元格级 SQL 查询） |
 
 ## 许可
 

@@ -8,7 +8,7 @@ license: MIT
 
 ## 0 使用前置：先确保上游快照已就绪（首次安装必做）
 
-本技能经 GitHub 仓库分发时，`xlwings/`、`xlwings-server/`、`MCP-Server/`、`examples/`、`xlwings-lite/`
+本技能经 GitHub 仓库分发时，`xlwings/`、`xlwings-server/`、`xlwings-sqlookup/`、`MCP-Server/`、`examples/`、`xlwings-lite/`
 等大快照目录**只保留占位 README**（避免仓库膨胀）；安装后这些目录是**缺失/不完整**的。
 
 **首次使用本技能前（或发现任一上游目录只剩占位 README 时），先运行：**
@@ -25,10 +25,10 @@ license: MIT
 
 **上游跟踪与更新机制（技能维护）**：
 
-本地上游原文目录共 **18 路**（17 路 git 快照 + 1 路官网镜像 `xlwings-lite/`），随官方仓库/官网演进，由脚本统一跟踪，**禁止手改上游原文**（git 为 zip 快照；官网镜像由 llms-full 重建）：
+本地上游原文目录共 **19 路**（18 路 git 快照 + 1 路官网镜像 `xlwings-lite/`），随官方仓库/官网演进，由脚本统一跟踪，**禁止手改上游原文**（git 为 zip 快照；官网镜像由 llms-full 重建）：
 
 - `xlwings/`：xlwings 核心源码包，跟踪 `main`（开发线，提交数领先最新正式版），快照 commit 见 `manifest.json` 的 `pinned_sha`；目录名不含版本号
-- `examples/`、`MCP-Server/` 与技能根目录下全部开源仓库：`xlwings-server`（跟 main，目录在技能根目录 `xlwings-server/`，由 examples/ 迁出）、`mcp-server-xlwings`、`xlwings-mcp-server`、`excel-mcp`、`Excel_MCP_Server`、`Excel_udf_itus`、`cross-check-reports`、`excel-automated-testing`、`python-for-excel-course`、`simulation-demo`、`static-excel-test`、`taxi-duckdb`、`xl-pq-handler`、`xlwings-demo`、`xlwings-eikon`、`xlwings-factsheet-demo`——后 15 个跟踪默认分支（main/master）
+- `examples/`、`MCP-Server/` 与技能根目录下全部开源仓库：`xlwings-server`（跟 main，目录在技能根目录 `xlwings-server/`，由 examples/ 迁出）、`xlwings-sqlookup`（跟 main，目录在技能根目录 `xlwings-sqlookup/`；xlwings Lite 官方插件，为单元格提供 `SQLOOKUP` 自定义函数——用 SQLite 内存引擎对 Excel 范围/表格跑 SQL 查询）、`mcp-server-xlwings`、`xlwings-mcp-server`、`excel-mcp`、`Excel_MCP_Server`、`Excel_udf_itus`、`cross-check-reports`、`excel-automated-testing`、`python-for-excel-course`、`simulation-demo`、`static-excel-test`、`taxi-duckdb`、`xl-pq-handler`、`xlwings-demo`、`xlwings-eikon`、`xlwings-factsheet-demo`——后 15 个跟踪默认分支（main/master）
 - `xlwings-lite/`：lite.xlwings.org 官方文档离线镜像（**web 源，非 git 快照**）——文档源为私有 Sphinx 构建、公开仓库 `xlwings/xlwings-lite` 仅做 issue 跟踪，故漂移判据改用站点暴露的 `llms.txt`/`llms-full.txt`（顶层 changelog 版本号 + 页面集合）；`scripts/sync_upstream.py` 对其走 web 分支，重建算法在 `scripts/web_mirror.py`（分页 + 排版归一 + 合并缺失图片，保留自研 README/`_images/`）
 
 **组件**：
@@ -242,7 +242,7 @@ import xlwings as xw
 | 通道 | 定位 | 参考文档 | 关键资源 |
 |------|------|---------|---------|
 | xlwings Server | 服务端运行时（FastAPI + Socket.IO + Redis），Office.js 加载项后端 | `references/14-xlwings-server-guidance.md` | `xlwings-server/`（docs 58 篇 + xlwings_server 包 + deployment/nginx/scripts/tests） |
-| xlwings Lite | 浏览器端运行时（Pyodide/WASM），免费自包含 | `references/15-xlwings-lite-guidance.md` | `xlwings-lite/`（官方文档 34 篇镜像，至 1.0.0.105，含 wingman/settings/beta）+ taxi-duckdb 案例 |
+| xlwings Lite | 浏览器端运行时（Pyodide/WASM），免费自包含 | `references/15-xlwings-lite-guidance.md` | `xlwings-lite/`（官方文档 34 篇镜像，至 1.0.0.105，含 wingman/settings/beta）+ taxi-duckdb 案例 + `xlwings-sqlookup/` 官方插件源码（`SQLOOKUP` 单元格级 SQL 查询） |
 | Office.js 引擎 | 客户端引擎（值转换层 + UDF/脚本全链路），Server 与 Lite 共享的语义内核 | `references/16-xlwings-officejs.md` | `xlwings/xlwings/pro/_xlofficejs.py` + `udfs_officejs.py` |
 
 **工作流**：

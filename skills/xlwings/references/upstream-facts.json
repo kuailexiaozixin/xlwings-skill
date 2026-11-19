@@ -1,10 +1,11 @@
 ﻿{
   "_comment": "自研文档引用的上游事实锚点台账（track_upstream.py 第②线检测对象）。每条 = 自研文档对上游快照的一个具体断言（行数/KB/行号/文件数），同步上游后跑 track_upstream.py 核对，STALE 即需修对应 docs 处。kind 语义：lines=文件行数；sizekb=文件大小//1024；filecount=目录下 *.md 数；exists=文件存在；symbol_line=value.line 行(1-based) strip 后以 value.symbol 开头。docs=断言出处（自研文档:行号），修复时按此定位。",
-  "updated": "2026-11-06",
+  "updated": "2026-11-19",
   "snapshot": {
     "xlwings": "5b38a61",
     "xlwings-server": "00f3388",
-    "xlwings-lite": "1.0.0.105"
+    "xlwings-lite": "1.0.0.105",
+    "xlwings-sqlookup": "b793550"
   },
   "facts": [
     {
@@ -208,6 +209,41 @@
       "docs": [
         "references/15-xlwings-lite-guidance.md:15",
         "xlwings-lite/README.md"
+      ]
+    },
+    {
+      "id": "sqlookup-functions-lines",
+      "source": "xlwings-sqlookup",
+      "file": "src/xlwings_sqlookup/functions.py",
+      "kind": "lines",
+      "value": 59,
+      "docs": [
+        "references/15-xlwings-lite-guidance.md:456",
+        "references/15-xlwings-lite-guidance.md:769",
+        "references/00-index.md:75"
+      ]
+    },
+    {
+      "id": "sqlookup-entrypoint-line",
+      "source": "xlwings-sqlookup",
+      "file": "pyproject.toml",
+      "kind": "symbol_line",
+      "value": {
+        "line": 26,
+        "symbol": "[project.entry-points.xlwings_lite]"
+      },
+      "docs": [
+        "references/15-xlwings-lite-guidance.md:456"
+      ]
+    },
+    {
+      "id": "sqlookup-readme-lines",
+      "source": "xlwings-sqlookup",
+      "file": "README.md",
+      "kind": "lines",
+      "value": 99,
+      "docs": [
+        "references/00-index.md:75"
       ]
     }
   ]

@@ -117,3 +117,16 @@
 > `python scripts/sync_upstream.py --ensure` 确保上游已同步到本地（位置即技能目录、与既有文件结构一致）。实测本地
 > 均已就绪（18 源 unchanged），灵敏度验证：缺失目录→需重建、完整源→不动，三线复核 PASS。SKILL.md §1 已注明。
 | 2026-11-09 | `taxi-duckdb` | codeload | `a52af5b` | 17 个文件 |
+
+## 2026-11-19 新增上游 xlwings-sqlookup
+
+- **新增第 19 路 git 源**：`xlwings/xlwings-sqlookup`（本地 `xlwings-sqlookup/`，跟 main，pinned_sha `b7935504dbf4`）。xlwings Lite 官方插件，提供 `SQLOOKUP` 自定义函数（SQLite 内存引擎在单元格内对范围/表格跑 SQL）。
+- 本地快照经 GitHub trees API 比对与上游 HEAD 完全一致（**14 个 blob 文件**，无缺失无多余），manifest 直接锁定当前 HEAD `b793550`。
+- `sync_upstream.py --check` 复核：19 源全部识别，`xlwings-sqlookup: 已是最新`。
+- **SKILL.md** §1：源总量 18→19 路（18 git + 1 web），根目录源清单插入 `xlwings-sqlookup` 条目，§5 场景 B 的 Lite 行补插件指针。
+- **references/15-xlwings-lite-guidance.md**：3.5 数据库节新增「官方 Lite 插件 `xlwings-sqlookup`（`=SQLOOKUP`）」完整小节（启用方式 / 语法 / 日期列语义与 BETWEEN 陷阱 / 与 SQLookup 加载项互斥 / 源码验证 / 开发含义），“内容来源”加第 ④ 项，“可配套阅读”加源码条目。
+- **references/00-index.md**：权威源由四源改五源并新增 `xlwings-sqlookup/` 行；15 号文档描述补插件覆盖；引用方清单补 xlwings-sqlookup。
+- **references/upstream-facts.json**：新增 3 条上游事实锚点（functions.py 59 行 / pyproject.toml L26 entry point / README.md 99 行），`snapshot` 补 `xlwings-sqlookup: b793550`，`updated` → 2026-11-19。
+- **examples/ReadMe.md**：案例总览新增 `xlwings-sqlookup（已迁至技能根目录）` 一行。
+- `python scripts/track_upstream.py` 三线复核：线① 19 源（sqlookup OK）、线② 21 条锚点全 OK、线③ 版本一致 → **PASS**。
+- 顺带发现未拉取：xlwings 主仓库（`e6a4185` → `de3c81b`）、xlwings-lite（`1.0.0.105` → `1.0.0.112`，页面 34→35）有更新，待用户指示。

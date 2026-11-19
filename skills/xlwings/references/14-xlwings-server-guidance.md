@@ -691,7 +691,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 - 不再“fork 官方仓库 + merge upstream”，故无 `git fetch upstream`/`git merge`/`python run.py deps compile` 这套仓库形态流程（已随 v1.0 移除，`run.py` 现存子命令仅 `init`/`wasm`）
 - pre-1.0 仓库形态 → v1.0 包形态迁移按 `docs/migration.md`：新目录 `uv add xlwings-server` + `uv run xlwings-server init .` + `uv run xlwings-server migrate <旧项目路径>`，逐项迁回依赖/静态文件/config/auth/router/jwks
 
-**版本事实**：`docs/changelog.md` 为版本权威（本手册基准 1.20.1，2026-11-04，快照 commit 00f3388）；技能侧 18 路上游 manifest 锁定 `main`（其中 xlwings-lite 为 web 源），升级时同步刷新本手册与 13-d 中的版本引用。
+**版本事实**：`docs/changelog.md` 为版本权威（本手册基准 1.20.1，2026-11-04，快照 commit 00f3388）；技能侧 19 路上游 manifest 锁定 `main`（其中 xlwings-lite 为 web 源），升级时同步刷新本手册与 13-d 中的版本引用。
 
 **平台维护责任**：Azure Functions 的 host 运行时版本与 Python EOL 需人工跟踪（`docs/azure_functions.md` 明确列出跟踪项）。
 

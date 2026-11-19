@@ -29,6 +29,7 @@ AIGC:
 | Excel_udf_itus-main | 数据表查询驱动 UDF 完整工程（SQLite → @xw.func → example.xlsm 公式调用） | 场景 A · 4.3（UDF 完整工程） |
 | xlwings-demo-master | 官方综合演示集（basics/correlation/performance/frozen/reporting 等 13 个主题） | 场景 A · 4.3（社区版子目录文件级用途见 11 号文档）、场景 C · 测试写法、场景 D · 7.2/7.6 |
 | xlwings-server（已迁至技能根目录 `../xlwings-server/`） | 官方 xlwings Server 服务端工程（为 Excel/Google Sheets 提供 Python 支持，可自托管） | 场景 B · 5（Server 通道）、场景 D · 7.5（不部署）；完整研读见 `references/14-xlwings-server-guidance.md` |
+| xlwings-sqlookup（已迁至技能根目录 `../xlwings-sqlookup/`） | 官方 xlwings Lite 插件源码（`=SQLOOKUP`：用 SQLite 内存引擎对 Excel 范围/表格跑 SQL，结果溢出到相邻单元格） | 场景 B · 5（Lite 通道插件）、场景 D · 3.5；用法与源码研读见 `references/15-xlwings-lite-guidance.md` 3.5 |
 | taxi-duckdb-main | Web 加载项 + DuckDB 一体化案例（内嵌 Office.js 加载项，Pyodide 浏览器端 Python，任务窗格 `@script` 按钮查询纽约出租车 Parquet 数据） | 场景 B · 5（Lite 通道案例）、场景 D · 7.1；完整研读见 `references/15-xlwings-lite-guidance.md` 阶段七 |
 | python-for-excel-course-main | 官方入门视频课程（2018）配套 Jupyter 讲义，按 0-7 Part 组织 | 场景 D · 7.5 |
 

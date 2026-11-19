@@ -69,6 +69,15 @@
       ]
     },
     {
+      "id": "xlwings-sqlookup",
+      "local_dir": "xlwings-sqlookup",
+      "repo": "xlwings/xlwings-sqlookup",
+      "ref": "main",
+      "subpath": "",
+      "pinned_sha": "b7935504dbf49daf7bf838bff92ffdd487c8d03f",
+      "last_synced": "2026-11-19"
+    },
+    {
       "id": "mcp-server-xlwings",
       "local_dir": "MCP-Server/geniuskey-mcp-server-xlwings-main/mcp-server-xlwings-main",
       "repo": "geniuskey/mcp-server-xlwings",
