@@ -242,7 +242,7 @@ import xlwings as xw
 | 通道 | 定位 | 参考文档 | 关键资源 |
 |------|------|---------|---------|
 | xlwings Server | 服务端运行时（FastAPI + Socket.IO + Redis），Office.js 加载项后端 | `references/14-xlwings-server-guidance.md` | `xlwings-server/`（docs 58 篇 + xlwings_server 包 + deployment/nginx/scripts/tests） |
-| xlwings Lite | 浏览器端运行时（Pyodide/WASM），免费自包含 | `references/15-xlwings-lite-guidance.md` | `xlwings-lite/`（官方文档 34 篇镜像，至 1.0.0.105，含 wingman/settings/beta）+ taxi-duckdb 案例 + `xlwings-sqlookup/` 官方插件源码（`SQLOOKUP` 单元格级 SQL 查询） |
+| xlwings Lite | 浏览器端运行时（Pyodide/WASM），免费自包含 | `references/15-xlwings-lite-guidance.md` | `xlwings-lite/`（官方文档 35 篇镜像，至 1.0.0.112，含 wingman/settings/beta）+ taxi-duckdb 案例 + `xlwings-sqlookup/` 官方插件源码（`SQLOOKUP` 单元格级 SQL 查询） |
 | Office.js 引擎 | 客户端引擎（值转换层 + UDF/脚本全链路），Server 与 Lite 共享的语义内核 | `references/16-xlwings-officejs.md` | `xlwings/xlwings/pro/_xlofficejs.py` + `udfs_officejs.py` |
 
 **工作流**：

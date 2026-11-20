@@ -7,8 +7,8 @@
       "repo": "xlwings/xlwings",
       "ref": "main",
       "subpath": "",
-      "pinned_sha": "e6a4185015498cfb661ed6b896681a81a503cc44",
-      "last_synced": "2026-11-08"
+      "pinned_sha": "97677d9e5038e33e3de58662aad4517ae46b20e2",
+      "last_synced": "2026-11-20"
     },
     {
       "id": "xlwings-server",
@@ -28,9 +28,9 @@
       "base_url": "https://lite.xlwings.org/",
       "llms_url": "https://lite.xlwings.org/llms-full.txt",
       "index_url": "https://lite.xlwings.org/llms.txt",
-      "pinned_version": "1.0.0.105",
-      "pinned_full_sha": "72fd2183290ff89f77581eac21e11d7f62060b9f7d8838af23094385824e67f5",
-      "last_synced": "2026-11-08",
+      "pinned_version": "1.0.0.112",
+      "pinned_full_sha": "09f914407f8c4c7cb59cdc7af9040394d5bcf79f4596d5a9f58d1bea55268f6a",
+      "last_synced": "2026-11-20",
       "pinned_pages": [
         "about.md",
         "app-mode.md",
@@ -58,6 +58,7 @@
         "notebooks.md",
         "personal-modules.md",
         "plotting.md",
+        "plugins.md",
         "quickstart.md",
         "security.md",
         "self-hosting.md",

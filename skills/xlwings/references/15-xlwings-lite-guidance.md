@@ -12,7 +12,7 @@
 > 5. **参考**：editor → tests → configuration → environment-variables → troubleshooting → faq → changelog / about / settings / beta。
 > 开发时按"入门 → 进阶 → 分发 → 自托管"的官方路径推进；本文件阶段一/二承载选型与准备，阶段三按"入门组 → 进阶组"展开，阶段四/五/六对应参考/分发/自托管组，阶段七以完整案例收束。
 >
-> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档 34 篇离线镜像（至 1.0.0.105，含 wingman/settings/beta 三页），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
+> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档 35 篇离线镜像（至 1.0.0.112，含 databases/plugins 新页与 wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
 
 ## 目录
 
@@ -763,7 +763,7 @@ Lite 持续演进中，开发与分发时关注以下维度（具体版本号见
 
 ## 可配套阅读
 
-- `xlwings-lite/`（34 篇官方文档离线镜像 + README 索引 + 39 张插图，至 1.0.0.105，含 wingman/settings/beta）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
+- `xlwings-lite/`（35 篇官方文档离线镜像 + README 索引 + 41 张插图，至 1.0.0.112，含 wingman/settings/beta）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
 - `xlwings/xlwings/udfs.py`——`@func`/`@arg`/`@ret`/`@script` 装饰器实现（Lite 与桌面版同源，3.1/3.2 源码验证）；
 - `xlwings/xlwings/ext/`（sql.py + __init__.py）——`=SQL()` 扩展源码（3.5）；
 - `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py` 59 行、`pyproject.toml` 的 `xlwings_lite` entry point、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件扩展模式的最小完整样例（3.5）；

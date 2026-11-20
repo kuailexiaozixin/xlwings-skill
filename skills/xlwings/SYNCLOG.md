@@ -130,3 +130,6 @@
 - **examples/ReadMe.md**：案例总览新增 `xlwings-sqlookup（已迁至技能根目录）` 一行。
 - `python scripts/track_upstream.py` 三线复核：线① 19 源（sqlookup OK）、线② 21 条锚点全 OK、线③ 版本一致 → **PASS**。
 - 顺带发现未拉取：xlwings 主仓库（`e6a4185` → `de3c81b`）、xlwings-lite（`1.0.0.105` → `1.0.0.112`，页面 34→35）有更新，待用户指示。
+- **发布**：仓库 `kuailexiaozixin/xlwings` 已重命名为 `kuailexiaozixin/xlwings-skill`；本次改动同步至发布克隆（`skills/xlwings/`，sqlookup 按惯例以占位 README 分发）并 `gh skill publish` 发 **v1.0.17**（https://github.com/kuailexiaozixin/xlwings-skill/releases/tag/v1.0.17）。安装：`gh skill install kuailexiaozixin/xlwings-skill`。
+| 2026-11-20 | `xlwings` | codeload | `97677d9` | 457 个文件 |
+| 2026-11-20 | `xlwings-lite` | web(新图 2) | `1.0.0.112` | 35 页 / 77 文件 |

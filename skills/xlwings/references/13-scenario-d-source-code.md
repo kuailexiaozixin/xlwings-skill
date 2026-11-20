@@ -97,7 +97,7 @@ xlwings 0.37.4 通过 `xw.engines` 管理四种引擎，引擎选择决定 `Book
 
 #### 1.2.3 remote 引擎（xlwings Server）
 
-- **实现**：`pro/_xlremote.py`（6137 行完整客户端引擎），通过 HTTP REST API 与 xlwings Server 通信；自 2026-10 上游起支持透视表范围读取：`PivotTable.get_range()`/`get_data_body_range()`（report/data_body 两类，**异步且仅 Lite/emscripten**，同步 `range`/`data_body_range` 在 remote 引擎不支持），经注入的 `js.xlwings.getPivotTableRangeAddress` 直调解析实时地址——JS 侧实现见 14 号 5.2b
+- **实现**：`pro/_xlremote.py`（6148 行完整客户端引擎），通过 HTTP REST API 与 xlwings Server 通信；自 2026-10 上游起支持透视表范围读取：`PivotTable.get_range()`/`get_data_body_range()`（report/data_body 两类，**异步且仅 Lite/emscripten**，同步 `range`/`data_body_range` 在 remote 引擎不支持），经注入的 `js.xlwings.getPivotTableRangeAddress` 直调解析实时地址——JS 侧实现见 14 号 5.2b
 - **细节去向（单点原则）**：客户端"如何连 Server"的完整机制（JSON 动作协议、lazy load、计算模式映射、颜色规范化、版本校验、对象覆盖）已迁移至 `references/14-xlwings-server-guidance.md` 阶段一 1.6，本处不再展开
 - **对比要点**：与 excel/calamine/officejs 三引擎并列，属"服务端无 Excel 环境、Linux 部署、Google Sheets 支持"通道
 
@@ -155,7 +155,7 @@ xlwings 0.37.4 通过 `xw.engines` 管理四种引擎，引擎选择决定 `Book
 底层 Rust 层见 2.3.2 `src/`（`lib.rs`：`CellValue` 枚举逐类转 Python 对象、`get_values(used_range)` 读区域、`CalamineError` → `XlwingsError` 透传）。
 
 #### 1.2.5 officejs 引擎（Web 加载项）
-**定位**：`pro/_xlofficejs.py`（160 行，值转换层）+ `pro/udfs_officejs.py`（1373 行，UDF/脚本全链路），基于 Office.js API 的 Excel Web 加载项通道——**Server 与 Lite 共享的语义内核**。
+**定位**：`pro/_xlofficejs.py`（164 行，值转换层）+ `pro/udfs_officejs.py`（1388 行，UDF/脚本全链路），基于 Office.js API 的 Excel Web 加载项通道——**Server 与 Lite 共享的语义内核**。
 - **细节去向（单点原则）**：完整源码研读（值转换层 / UDF / 脚本 / socket.io 会话 / 测试）与官方教程对照已独立为 `references/16-xlwings-officejs.md`，本处不再展开；与桌面 UDF（2.2.2）同源异路
 - **细节去向（单点原则）**：完整源码研读（值转换层 / UDF / 脚本 / socket.io 会话 / 测试）与官方教程对照已独立为 `references/16-xlwings-officejs.md`，本处不再展开
 
@@ -248,7 +248,7 @@ Reports 是 xlwings PRO 的核心增值功能，实现"Excel 模板 + 结构化�
 **与 1.2.3 的关系**：1.2.3 的客户端侧 remote 引擎细节（`pro/_xlremote.py`，如何连 Server）已一并迁移至 14 号手册阶段一 1.6；14 号手册其余章节是 Server 服务端如何工作。
 ### 1.8 Office.js 引擎（指针，详见 16 号文档）
 
-**定位**：`xlwings/pro/_xlofficejs.py`（160 行）+ `xlwings/pro/udfs_officejs.py`（1373 行）共同实现 xlwings PRO 的 **Office.js 自定义函数（Custom Functions）与自定义脚本（Custom Scripts）**——remote 类型引擎，走 socket.io 推流（文件头注释明确 "only used in connection with Office.js UDFs, not with runPython"）。
+**定位**：`xlwings/pro/_xlofficejs.py`（164 行）+ `xlwings/pro/udfs_officejs.py`（1388 行）共同实现 xlwings PRO 的 **Office.js 自定义函数（Custom Functions）与自定义脚本（Custom Scripts）**——remote 类型引擎，走 socket.io 推流（文件头注释明确 "only used in connection with Office.js UDFs, not with runPython"）。
 
 **要点**（完整源码研读 + 官方教程对照 + 工作流编排见 `references/16-xlwings-officejs.md`）：
 
