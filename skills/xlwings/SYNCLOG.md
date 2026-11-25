@@ -133,3 +133,12 @@
 - **发布**：仓库 `kuailexiaozixin/xlwings` 已重命名为 `kuailexiaozixin/xlwings-skill`；本次改动同步至发布克隆（`skills/xlwings/`，sqlookup 按惯例以占位 README 分发）并 `gh skill publish` 发 **v1.0.17**（https://github.com/kuailexiaozixin/xlwings-skill/releases/tag/v1.0.17）。安装：`gh skill install kuailexiaozixin/xlwings-skill`。
 | 2026-11-20 | `xlwings` | codeload | `97677d9` | 457 个文件 |
 | 2026-11-20 | `xlwings-lite` | web(新图 2) | `1.0.0.112` | 35 页 / 77 文件 |
+- 2026-11-20 发布：本次改动经发布 worktree（skills/xlwings/ 虚拟结构，上游大目录占位）提交 1420be6 并推 main；`gh skill publish --tag v1.0.18` 发布成功（tree 指纹 f383214 三处核对一致）。安装：`gh skill install kuailexiaozixin/xlwings-skill`。
+| 2026-11-25 | `xlwings-server` | codeload | `4f6511b` | 429 个文件 |
+
+> 2026-11-25 `xlwings-server` 同步审计（force 全量 codeload，`6a00cc4`→`4f6511b`，425→429 文件）：上游 `docs/changelog.md` 新增 **1.20.2（2026-11-20）**——① 向新建空 Excel 表追加行不再报 `Table row index is out of range`；② Pyodide ≥0.28 下脚本参数 `null` 在 WASM 版收为 `None`（原 `JsNull`）。`tests/` 63→64（新增 `test_wasm_script_args.py`，py 23→24，js 32、配置/数据 8 不变）；`static/js/custom-scripts/` 仍 22 个 `.js`；`cli.py` 尺寸锚点未变。自研同步：references/14 L63/L694 版本基准 1.20.1（2026-11-04）→1.20.2（2026-11-20）、快照 commit 00f3388→4f6511b，L36/L532 tests 63→64（Python 23→24）；upstream-facts.json snapshot xlwings-server 00f3388→4f6511b。L409 “1.20.1 起内置 bracketCurrentRowReferences”为功能引入版本，正确保留。三线复核：线② server 锚点（server-cli-size 等）全 OK、线③ PASS。备份见工作区 backup_xlwings_server_sync/。
+| 2026-11-25 | `xlwings` | incremental（6 处变更） | `a8b6301` | 457 个文件 |
+| 2026-11-25 | `xlwings-lite` | web(新图 1) | `1.0.0.113` | 36 页 / 79 文件 |
+| 2026-11-25 | `mcp-server-xlwings` | incremental（3 处变更） | `52b9765` | 48 个文件 |
+
+> 2026-11-25 其余源同步审计（默认增量同步）：**xlwings** 主仓 `97677d9`→`a8b6301`（incremental，457 文件）；**xlwings-lite**（web）`1.0.0.112`→`1.0.0.113`（36 页/79 文件，新增 custom-app 页 + 1 图）；**mcp-server-xlwings** `3869179`→`52b9765`（incremental，48 文件）。其余 15 源 unchanged。`track_upstream.py` 检出 4 条 STALE 已修：`xlremote-lines` 6148→6170（ref13:100、ref14:141）、`main-size` 341→342KB（ref13:287）、`chart-get-title-line` L6596→L6606（仅台账，15 号正文未写死行号）、`lite-page-count` 36→37（含自写 README 口径；官方内容页 35→36）。文档正文同步：SKILL.md:245 / ref00-index:105 / ref15:15,766 的 lite 篇数 35→36、版本 112→113；ref15 §5.1 新增 Custom App bullet；ref15:766 插图 41→42；xlwings-lite/README.md 头部 36 页+42 图、历史补 1.0.0.113 行、索引表新增 custom-app 行；upstream-facts.json snapshot xlwings 5b38a61→a8b6301、xlwings-lite 1.0.0.105→1.0.0.113，updated 2026-11-25。mcp-server-xlwings 无文档写死引用，仅 manifest 更新。三线复跑：线① 19 源 OK、线② 21 锚点全一致、线③ PASS。备份见工作区 backup_other_sync_20261125/。

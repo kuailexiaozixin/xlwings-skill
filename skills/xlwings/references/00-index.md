@@ -102,7 +102,7 @@
 | `12-scenario-a-mcp-automation.md` | SKILL.md、references/00-index.md |
 | `13-scenario-d-source-code.md` | SKILL.md、references/00-index.md、references/04-python-guidance（案例路由）、references/07-udf-guidance（案例路由）、references/11-scenario-a（案例路由）、references/15-xlwings-lite-guidance（Lite 内容已迁出：1.6/4.5 指针 + 1.8 Lite 适配分支指针）、references/16-xlwings-officejs（Office.js 引擎内容已迁出：1.2.5/1.8 指针） |
 | `14-xlwings-server-guidance.md` | SKILL.md（5 章场景 B、7.4/7.5/7.6）、references/00-index.md、references/13-scenario-d（1.7 指针）、references/15-xlwings-lite-guidance（导航） |
-| `15-xlwings-lite-guidance.md` | SKILL.md（5 章场景 B、7.1 taxi 案例、7.4 PRO 研读、7.6 总览）、references/00-index.md、references/13-scenario-d（1.6/4.5 指针）、xlwings-lite（35 篇官方文档镜像，至 1.0.0.112）、xlwings-sqlookup（3.5 插件小节） |
+| `15-xlwings-lite-guidance.md` | SKILL.md（5 章场景 B、7.1 taxi 案例、7.4 PRO 研读、7.6 总览）、references/00-index.md、references/13-scenario-d（1.6/4.5 指针）、xlwings-lite（36 篇官方文档镜像，至 1.0.0.113）、xlwings-sqlookup（3.5 插件小节） |
 | `16-xlwings-officejs.md` | SKILL.md（5 章场景 B、7.4/7.5）、references/00-index.md、references/13-scenario-d（1.2.5/1.8 指针）、references/15-xlwings-lite-guidance（Lite 适配分支导航） |
 
 **核查命令**（重构后执行）：

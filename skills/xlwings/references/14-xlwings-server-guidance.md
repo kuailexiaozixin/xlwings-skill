@@ -33,7 +33,7 @@
 | 四 核心能力开发——自定义函数 | 把 Python 函数暴露为 Excel 公式（转换/命名空间/流式/句柄/后续脚本） | 函数集 + 元数据 | `docs/custom_functions.md`、`xlwings_server/routers/xlwings.py`、`serializ | 函数经真机公式调用返回预期值；流式/句柄（若有）验证通过；元数据生成正确 |ers/`、`object_handles.py`、`custom_functions/` |
 | 五 核心能力开发——自定义脚本与任务窗格 | 写整簿操作脚本 + 构建任务窗格 UI + 产出并安装 manifest | 脚本 + 任务窗格 + manifest | `docs/custom_scripts.md`、`docs/taskpane_*.md`、`docs/jinja.md`、 | 脚本三通道至少一条真机跑通；任务窗格可渲染；manifest 安装验证记录 |`docs/htmx.md`、`docs/alpinejs.md`、`docs/bootstrap.md`、`docs/manifest.md`、`docs/install_officejs_addin.md`、`custom_scripts/`、`templates/` |
 | 六 认证、授权与安全 | 让函数/脚本受保护，分级授权，锁定任务窗格 | 认证配置 + RBAC + 安全头 | `docs/authentication.md`、`docs/authorization.md`、`docs/auth_entraid.md`、`docs/auth_provider | 未登录返回 Access Denied；角色分级生效；安全头生产生效 |s.md`、`docs/auth_taskpane.md`、`auth/`、`dependencies.py`、`security_headers.py` |
-| 七 测试、调试与性能 | 建立质量门禁，掌握调试手段，应用性能配方 | 三层测试 + 验证清单 | `tests/`（63 个文件）、`docs/debugging.md`、`docs/performance.md`、`docs/troubleshooting.md` | 三层测试全绿（对齐官方 tests/ 结构）；调试记录 + 性能基线 |
+| 七 测试、调试与性能 | 建立质量门禁，掌握调试手段，应用性能配方 | 三层测试 + 验证清单 | `tests/`（64 个文件）、`docs/debugging.md`、`docs/performance.md`、`docs/troubleshooting.md` | 三层测试全绿（对齐官方 tests/ 结构）；调试记录 + 性能基线 |
 | 八 部署、运维与升级 | 上线并持续演进 | 部署配置 + 生产环境 | `deployment/`、`nginx/`、`scripts/`、`docs/index_hosting.md` 及各托管族、`docs/migration.md`、`docs/was | 部署配置就绪；生产清单核查通过；迁移/升级执行记录 |m_*.md` |
 
 **加载项三件套 ↔ 阶段速查**（Office.js 加载项 = 壳 + 核）：
@@ -60,7 +60,7 @@
 
 选型判据：目标机无 Python 且多人 / 浏览器 / 在线协作 → Server 路线（本手册）；单机离线、VBA 生态、需要桌面 UDF/Ribbon 体验 → 场景 C。二者都涉及 UDF（本地 vs Server 自定义函数）、Ribbon（本地 vs manifest 命令）、安装（XLSTART vs 加载项分发），但实现通道完全不同，互不替代。
 
-**版本基准**：本手册跟踪上游 `main` 分支（技能 manifest 锁定 `main`，本快照对应 `docs/changelog.md` 最新条目 1.20.1（2026-11-04））。`xlwings_server/__init__.py` 的 `__version__` 在 zip 快照中为 `0.0.0`（真实版本以 `docs/changelog.md` 为准），`docs/changelog.md`、`docs/migration.md` 是版本与升级事实的唯一权威。
+**版本基准**：本手册跟踪上游 `main` 分支（技能 manifest 锁定 `main`，本快照对应 `docs/changelog.md` 最新条目 1.20.2（2026-11-20））。`xlwings_server/__init__.py` 的 `__version__` 在 zip 快照中为 `0.0.0`（真实版本以 `docs/changelog.md` 为准），`docs/changelog.md`、`docs/migration.md` 是版本与升级事实的唯一权威。
 
 **许可提示**：source-available 双许可（PolyForm Noncommercial / PRO EULA，见 `LICENSE.md`）——仅供源码研读借鉴设计，不部署、不抄码。
 **加载项三件套就绪检查（发布前门禁）**：
@@ -138,7 +138,7 @@
 
 ### 1.6 客户端如何连接 Server：remote 引擎（`pro/_xlremote.py`）
 
-- **定位**：xlwings 客户端侧连接 Server 的引擎（`xlwings/xlwings/pro/_xlremote.py`，6148 行完整实现），与 excel/calamine/officejs 并列为 PRO 四引擎；13-d 1.2.3 已压缩为指针，细节在此展开
+- **定位**：xlwings 客户端侧连接 Server 的引擎（`xlwings/xlwings/pro/_xlremote.py`，6170 行完整实现），与 excel/calamine/officejs 并列为 PRO 四引擎；13-d 1.2.3 已压缩为指针，细节在此展开
 - **通信方式**：HTTP REST API；对象操作经 `append_json_action` 打包为 JSON 动作（`func`/`args`/`values`/`sheet_position` 等）累积在 `_json["actions"]`，随请求一并发送服务端执行
 - **对象覆盖**：Apps/App/Books/Book/Sheets/Sheet/Range/Names/Name/Pictures/Shapes/Charts/Characters/Note/PageSetup/Border/Borders/Font/FreezePanes/Table/Tables——与桌面引擎同构的高层 API，脚本代码无需感知通道差异
 - **lazy load**：`_SHEET_VALUES_LOADED_KEY = "_xlwings_values_loaded"` 标记 sheet 值是否已加载（元数据先加载、值按需获取）；该标记仅本地读取，不序列化回 JS
@@ -529,7 +529,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 - **输出物**：见 7.6。
 - **验收**：三层测试全绿（对齐官方 tests/ 结构）；性能基线有改造前后对比；故障排查清单已沉淀。
 
-### 7.1 官方测试体系（`tests/` 63 个文件：Python 测试 23 + JS 测试 32 + 配置/数据 8）
+### 7.1 官方测试体系（`tests/` 64 个文件：Python 测试 24 + JS 测试 32 + 配置/数据 8）
 
 **单元测试层（TestClient 打真实端点，mock 外部依赖如 Redis/Graph）**：
 
@@ -691,7 +691,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 - 不再“fork 官方仓库 + merge upstream”，故无 `git fetch upstream`/`git merge`/`python run.py deps compile` 这套仓库形态流程（已随 v1.0 移除，`run.py` 现存子命令仅 `init`/`wasm`）
 - pre-1.0 仓库形态 → v1.0 包形态迁移按 `docs/migration.md`：新目录 `uv add xlwings-server` + `uv run xlwings-server init .` + `uv run xlwings-server migrate <旧项目路径>`，逐项迁回依赖/静态文件/config/auth/router/jwks
 
-**版本事实**：`docs/changelog.md` 为版本权威（本手册基准 1.20.1，2026-11-04，快照 commit 00f3388）；技能侧 19 路上游 manifest 锁定 `main`（其中 xlwings-lite 为 web 源），升级时同步刷新本手册与 13-d 中的版本引用。
+**版本事实**：`docs/changelog.md` 为版本权威（本手册基准 1.20.2，2026-11-20，快照 commit 4f6511b）；技能侧 19 路上游 manifest 锁定 `main`（其中 xlwings-lite 为 web 源），升级时同步刷新本手册与 13-d 中的版本引用。
 
 **平台维护责任**：Azure Functions 的 host 运行时版本与 Python EOL 需人工跟踪（`docs/azure_functions.md` 明确列出跟踪项）。
 

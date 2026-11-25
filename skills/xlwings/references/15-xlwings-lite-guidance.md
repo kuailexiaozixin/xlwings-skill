@@ -12,7 +12,7 @@
 > 5. **参考**：editor → tests → configuration → environment-variables → troubleshooting → faq → changelog / about / settings / beta。
 > 开发时按"入门 → 进阶 → 分发 → 自托管"的官方路径推进；本文件阶段一/二承载选型与准备，阶段三按"入门组 → 进阶组"展开，阶段四/五/六对应参考/分发/自托管组，阶段七以完整案例收束。
 >
-> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档 35 篇离线镜像（至 1.0.0.112，含 databases/plugins 新页与 wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
+> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档 36 篇离线镜像（至 1.0.0.113，含 custom-app 新页与 databases/plugins、wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
 
 ## 目录
 
@@ -573,6 +573,8 @@ Lite 内置 pytest 运行器，可测试 Python 代码与工作簿本身：
 
 **工程价值**：一个 .xlsx + 加载项 = 完整的终端应用（表单输入 + 按钮动作 + 函数计算 + 输出），是"Excel 作为应用壳"的最轻交付形态。
 
+- **Custom App（1.0.0.113 起）**：App Mode 可用自有页面替换默认按钮/表单（`custom-app.md`）——在工作簿加 `index.html` 源文件（可选配 `.css`/`.js`），页面用 `xlwings.runScript()` 调用 Python 脚本；最省事的做法是直接用 Wingman 生成这套 HTML/CSS/JS，再按 Ctrl/Cmd+Shift+M 进 App Mode 显示。
+
 ### 5.2 文件、安全与隐私
 
 **对应文档**：`xlwings-lite/files.md` + `security.md`。
@@ -763,7 +765,7 @@ Lite 持续演进中，开发与分发时关注以下维度（具体版本号见
 
 ## 可配套阅读
 
-- `xlwings-lite/`（35 篇官方文档离线镜像 + README 索引 + 41 张插图，至 1.0.0.112，含 wingman/settings/beta）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
+- `xlwings-lite/`（36 篇官方文档离线镜像 + README 索引 + 42 张插图，至 1.0.0.113，含 wingman/settings/beta/custom-app）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
 - `xlwings/xlwings/udfs.py`——`@func`/`@arg`/`@ret`/`@script` 装饰器实现（Lite 与桌面版同源，3.1/3.2 源码验证）；
 - `xlwings/xlwings/ext/`（sql.py + __init__.py）——`=SQL()` 扩展源码（3.5）；
 - `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py` 59 行、`pyproject.toml` 的 `xlwings_lite` entry point、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件扩展模式的最小完整样例（3.5）；

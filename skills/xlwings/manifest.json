@@ -7,8 +7,8 @@
       "repo": "xlwings/xlwings",
       "ref": "main",
       "subpath": "",
-      "pinned_sha": "97677d9e5038e33e3de58662aad4517ae46b20e2",
-      "last_synced": "2026-11-20"
+      "pinned_sha": "a8b630153f1fbfd5efccf69aa6a4b5e14cb172df",
+      "last_synced": "2026-11-25"
     },
     {
       "id": "xlwings-server",
@@ -16,8 +16,8 @@
       "repo": "xlwings/xlwings-server",
       "ref": "main",
       "subpath": "",
-      "pinned_sha": "6a00cc48f24db76103935b0118cc12cc59b2aae6",
-      "last_synced": "2026-11-08"
+      "pinned_sha": "4f6511b3cc90a6ad25f27676f6352daac05c249e",
+      "last_synced": "2026-11-25"
     },
     {
       "id": "xlwings-lite",
@@ -28,9 +28,9 @@
       "base_url": "https://lite.xlwings.org/",
       "llms_url": "https://lite.xlwings.org/llms-full.txt",
       "index_url": "https://lite.xlwings.org/llms.txt",
-      "pinned_version": "1.0.0.112",
-      "pinned_full_sha": "09f914407f8c4c7cb59cdc7af9040394d5bcf79f4596d5a9f58d1bea55268f6a",
-      "last_synced": "2026-11-20",
+      "pinned_version": "1.0.0.113",
+      "pinned_full_sha": "e1a5d9f830751bd266d01747b898125876a55a5a9ebe60d6fd848b252b3996b4",
+      "last_synced": "2026-11-25",
       "pinned_pages": [
         "about.md",
         "app-mode.md",
@@ -42,6 +42,7 @@
         "changelog.md",
         "cleanup-missing-addin-refs.md",
         "configuration.md",
+        "custom-app.md",
         "custom-functions.md",
         "custom-scripts.md",
         "databases.md",
@@ -84,8 +85,8 @@
       "repo": "geniuskey/mcp-server-xlwings",
       "ref": "main",
       "subpath": "",
-      "pinned_sha": "3869179904c6fab150d32dafdb87d7e9956285ef",
-      "last_synced": "2026-11-08"
+      "pinned_sha": "52b976500ce1cfa49f0bc3efccf51eca82260985",
+      "last_synced": "2026-11-25"
     },
     {
       "id": "xlwings-mcp-server",
