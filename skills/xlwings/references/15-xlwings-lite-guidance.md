@@ -12,7 +12,7 @@
 > 5. **参考**：editor → tests → configuration → environment-variables → troubleshooting → faq → changelog / about / settings / beta。
 > 开发时按"入门 → 进阶 → 分发 → 自托管"的官方路径推进；本文件阶段一/二承载选型与准备，阶段三按"入门组 → 进阶组"展开，阶段四/五/六对应参考/分发/自托管组，阶段七以完整案例收束。
 >
-> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档 36 篇离线镜像（至 1.0.0.113，含 custom-app 新页与 databases/plugins、wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
+> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档离线镜像（至 1.0.0.113，含 custom-app 新页与 databases/plugins、wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
 
 ## 目录
 
@@ -158,7 +158,7 @@ Lite 在 xlwings 生态中的位置（与本地版 / Server 的关系，`index.m
 
 在 `xlwings/xlwings/` 源码中，Lite 并非独立实现一套对象模型，而是通过三种方式"投影"到既有架构上——理解这三处投影，就理解了 Lite 与桌面版的关系：
 
-**① `BookAsync` 类型提示（`main.py` L1470）——异步 API 的开关**
+**① `BookAsync` 类型提示（`main.py` 的 `BookAsync` 类）——异步 API 的开关**
 
 ```python
 class BookAsync(Book):
@@ -330,11 +330,11 @@ def hello(name):
 
 **值语义的 Lite 特有细节——JsNull 空值归一**（引擎机制完整研读见 `references/16-xlwings-officejs.md` 阶段二·值转换层，Lite/Pyodide 环境才有）：引擎读侧 `clean_value_data` 逐元素 `_clean_value_data_element`——**Pyodide ≥ 0.28 的 `JsNull` 哨兵**（JS `null` 空单元格）与 `""` 均归一为 `empty_as`；data types 协议的 `dict`（`Error`/日期）取 `basicValue`；float 走 `number_builder`。**开发含义**：Lite 中空单元格在 Python 侧统一表现为 `empty_as`（默认 `None`），与桌面版一致，但实现路径不同（桌面是 COM 变体空值，Lite 是 JS 空值哨兵）——跨端迁移代码时空值语义不变。
 
-**流式函数深度**（`custom-functions.md` "Streaming functions" + 源码 `xlwings/pro/udfs_officejs.py` L605、L641）：
+**流式函数深度**（`custom-functions.md` "Streaming functions" + 源码 `xlwings/pro/udfs_officejs.py` 的 `custom_functions_call`）：
 
 - 形态：`async def` + `yield`（异步生成器），如 `streaming_clock()` 每秒 yield 一次当前时间；支持 1d/2d 返回值（numpy 数组）。
 - 与传统 RTD 的区别：不用本地 COM 服务器；进程作为后台任务运行，**持续把更新推给 Excel**（而非 Excel 轮询）。
-- 推送通道（源码验证，见 16 号文档阶段三·UDF 全链路 流式三形态）：`udfs_officejs.py` 的 `custom_functions_call` 对 asyncgen 走"三形态"分发——`background_tasks` 字典 + `task_key` 去重复用 + `on_task_done` 清理竞态保护；**推送端二选一：Server 走 socket.io `set-result-{task_key}` 推流，Lite/Pyodide 走 `streaming_callback` 直推**。Lite 侧流式任务**总是重启**（L634：任务去重逻辑在 Lite 侧简化，无 Server 的 sid 订阅计数）。
+- 推送通道（源码验证，见 16 号文档阶段三·UDF 全链路 流式三形态）：`udfs_officejs.py` 的 `custom_functions_call` 对 asyncgen 走"三形态"分发——`background_tasks` 字典 + `task_key` 去重复用 + `on_task_done` 清理竞态保护；**推送端二选一：Server 走 socket.io `set-result-{task_key}` 推流，Lite/Pyodide 走 `streaming_callback` 直推**。Lite 侧流式任务**总是重启**（任务去重逻辑在 Lite 侧简化，无 Server 的 sid 订阅计数）。
 - 注意：流式函数不与 `WithScript` 组合（推送通道无法携带脚本负载）；流式函数带 `Caller` 注解时注册即报错（Office.js 中 stream 与 requiresAddress 互斥，注册期拒绝而非运行期注入 None）。
 
 **绘图**（`custom-functions.md` "Plots" + `security.md` "Custom functions that return images"）：返回 matplotlib Figure 的自定义函数，因 Excel 只能经 URL 显示图片，Lite 自动把渲染 PNG 上传到图片缓存，Excel 取回并嵌入，取后即删。**此功能需要计算时联网**；想完全离线在 Settings > Local 关闭 "Allow custom functions to return images"。自托管时图片缓存随部署内网化（阶段六）。
@@ -430,7 +430,7 @@ def hello_with_script(name):
 2. **下载 SQLite 数据库文件**：从网络位置取 `.sqlite` 文件，浏览器内 WASM 版 SQLite 打开——**注意必须把 `sqlite3` 加进 `requirements.txt`**（Pyodide 内置模块并非默认加载）。
 3. **Supabase（托管 Postgres，含 PostgREST）**：免费层可用、可自托管；**当前 Python 包兼容性坑**——`supabase`/`postgrest` 包在 Lite 下有问题，官方建议用 `requests` 或 `aiohttp` **直连 PostgREST 接口**（**httpx 当前也有问题**；用 `aiohttp` 必须同时把 `ssl` 加进 `requirements.txt`）。
 
-**源码验证——`=SQL()` 内置扩展**（`xlwings/xlwings/ext/sql.py`，74 行，Lite 与桌面版共用）：公式内嵌的 SQLite 内存表查询——单元格区域即表（类型推断建表 → 值序列化 → 内存库 → 别名解析 → 查询返回，完整五步管线与 Excel 用法见 13 号 4.6 的 SQL 写法要点与下方代码）：
+**源码验证——`=SQL()` 内置扩展**（`xlwings/xlwings/ext/sql.py`，Lite 与桌面版共用）：公式内嵌的 SQLite 内存表查询——单元格区域即表（类型推断建表 → 值序列化 → 内存库 → 别名解析 → 查询返回，完整五步管线与 Excel 用法见 13 号 4.6 的 SQL 写法要点与下方代码）：
 
 ```python
 @func
@@ -453,7 +453,7 @@ Excel 用法：`=SQL("SELECT ...", ["alias1"], range1, ["alias2"], range2, ...)`
 - **日期列（相对 `=SQL()` 的增量能力）**：Excel 把日期以序列号（如 `45306`）传给自定义函数，`=SQLOOKUP(..., "order_date, signup_date")` 把**最后一个参数**当作"逗号分隔的日期列名清单"，把这些列转成 ISO 文本再进 SQLite（列名**精确匹配、忽略大小写**；空单元格/文本/`TRUE`/`FALSE` 原样保留）；返回时日期列写回 Excel 日期，SQL 函数算出的日期（如 `date(order_date)`）为文本。注意陷阱：`BETWEEN ... AND '2024-01-31'` 会漏掉最后一天（`2024-01-31 00:00:00` 排在 `2024-01-31` 之后），改用 `order_date < '2024-02-01'` 或 `date(order_date) <= '2024-01-31'`。因为"末参单格文本即日期清单"，**每个别名后必须跟一个区域**。
 - **与 SQLookup 加载项互斥**：两者都注册名为 `SQLOOKUP` 的函数，不能同时安装；从加载项迁移的步骤是先移除加载项 → 按微软文档清 Office 缓存（会一并清掉 Lite 的本地环境变量与已导入文件，需先备份）→ 装插件。
 
-**源码验证**（`xlwings-sqlookup/src/xlwings_sqlookup/functions.py`，59 行）：`@func` + `@arg("query")` + `@arg("*arg", ndim=2)` 的 `sqlookup()` 只做三件事——① 末参单格文本识别为日期列清单（`_is_single_string`，判定规则与 `_sql` 辨识别名同源）；② `_parse_dates` 按列名下标把数值序列号换成 `xw.to_datetime(value)`，无匹配列/仅有表头/别名项均原样返回；③ 处理后的表直接投给 `xlwings.ext.sql._sql`——**与 `=SQL()` 共用同一个实现**，故建表/别名/写回语义完全一致，差别只在入口形态与日期支持。源码刻意**不设 `__xlwings_func_namespace__`**：函数名必须恰好是 `=SQLOOKUP(...)`。插件经 `pyproject.toml` 的 `[project.entry-points.xlwings_lite]` 声明（`sqlookup = "xlwings_sqlookup.functions"`），依赖 `xlwings>=0.37.10`（用到 ext.sql 的 `datetime()` 比较与混合类型列），并声明 `sqlite3; sys_platform == "emscripten" and python_version < "3.14"`（Pyodide 314 之前的 sqlite3 是独立包）。
+**源码验证**（`xlwings-sqlookup/src/xlwings_sqlookup/functions.py`）：`@func` + `@arg("query")` + `@arg("*arg", ndim=2)` 的 `sqlookup()` 只做三件事——① 末参单格文本识别为日期列清单（`_is_single_string`，判定规则与 `_sql` 辨识别名同源）；② `_parse_dates` 按列名下标把数值序列号换成 `xw.to_datetime(value)`，无匹配列/仅有表头/别名项均原样返回；③ 处理后的表直接投给 `xlwings.ext.sql._sql`——**与 `=SQL()` 共用同一个实现**，故建表/别名/写回语义完全一致，差别只在入口形态与日期支持。源码刻意**不设 `__xlwings_func_namespace__`**：函数名必须恰好是 `=SQLOOKUP(...)`。插件经 `pyproject.toml` 的 `[project.entry-points.xlwings_lite]` 声明（`sqlookup = "xlwings_sqlookup.functions"`），依赖 `xlwings>=0.37.10`（用到 ext.sql 的 `datetime()` 比较与混合类型列），并声明 `sqlite3; sys_platform == "emscripten" and python_version < "3.14"`（Pyodide 314 之前的 sqlite3 是独立包）。
 
 **开发含义**：① 要让终端用户完全不写 Python 就用上 SQL 分析，这是现成答案；② 它同时是"Lite 插件 = `@func` + `xlwings_lite` entry point + `requirements.txt` 一行"这一扩展模式的**最小完整样例**，照此可开发自有插件；③ 插件内任何需要 Excel 日期语义的逻辑，都要自己处理序列号（Lite 不会替自定义函数转换）。
 
@@ -488,7 +488,7 @@ Excel 用法：`=SQL("SELECT ...", ["alias1"], range1, ["alias2"], range2, ...)`
 - **`flush()`**：写值后立即可见——典型场景：写 A1 后在同一单元格/脚本内读它或读依赖单元格；print 后立即在 Output pane 看到输出；调用 `to_png()` 等写文件系统方法后在同一单元格/脚本内访问文件。自动 flush 仍发生在单元格/脚本结束时。
 - **`load()`**：单元格/脚本运行前 Lite 自动执行一次，一般无需手动；中途刷新用 `await book.load()` 或 `await mysheet.load()`（sheet 级只刷该 sheet，更高效）。异步 Book 上 `load()` **不含值**（值走 `get_value()`）；同步 Book 上 `load()` 含值，可 `load(values=False)` 排除。
 
-**源码研读——BookAsync 是"预加载开关"，懒加载注入在脚本管线**（引擎机制见 16 号文档阶段四·脚本全链路 懒加载注入，`xlwings/xlwings/main.py` L1470 + `pro/udfs_officejs.py`）：
+**源码研读——BookAsync 是"预加载开关"，懒加载注入在脚本管线**（引擎机制见 16 号文档阶段四·脚本全链路 懒加载注入，`xlwings/xlwings/main.py` + `pro/udfs_officejs.py`）：
 
 - `BookAsync` **运行时就是普通 `Book`**——类型提示只是信号：Lite 加载器看到该注解就**跳过整个工作簿的预加载**（`main.py` 注释原话："the annotation only signals xlwings Lite to skip loading the values of the entire book up front"）；
 - 引擎侧 `@script` 的 `lazy=` 参数已弃用，**统一由 `book: xw.BookAsync` 注解表达**（内部发 `"lazy"` wire 键）；**book 参数必须恰一个**（`_book_param_hint`），`BookAsync` 注解与 `lazy=False` 显式冲突 → 报错（注解优先）；
@@ -675,7 +675,7 @@ Lite 内置 pytest 运行器，可测试 Python 代码与工作簿本身：
 
 **仓库构成**（`examples/taxi-duckdb-main/taxi-duckdb-main/`）：
 - `LICENSE`（MIT）；
-- `taxi_local.xlsx`（11.6KB）——全部应用逻辑在此一个文件；
+- `taxi_local.xlsx`——全部应用逻辑在此一个文件；
 - `extracted/`——本技能提取的内嵌源码（`README.md` 目录说明）：`extract_webextension.py`（一步到位提取脚本：解包 + 解码，stdlib 无依赖）、`full/`（完整解包产物：12 个 zip 条目原样落盘 + `main.py` 98 行 / `requirements.txt` 解码明文就地生成于 `xl/webextensions/`——解包即解码，无第二目录）。
 
 ### 7.2 xlsx 内嵌结构解密
@@ -765,11 +765,11 @@ Lite 持续演进中，开发与分发时关注以下维度（具体版本号见
 
 ## 可配套阅读
 
-- `xlwings-lite/`（36 篇官方文档离线镜像 + README 索引 + 42 张插图，至 1.0.0.113，含 wingman/settings/beta/custom-app）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
+- `xlwings-lite/`（官方文档离线镜像 + README 索引 + 插图，至 1.0.0.113，含 wingman/settings/beta/custom-app）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
 - `xlwings/xlwings/udfs.py`——`@func`/`@arg`/`@ret`/`@script` 装饰器实现（Lite 与桌面版同源，3.1/3.2 源码验证）；
 - `xlwings/xlwings/ext/`（sql.py + __init__.py）——`=SQL()` 扩展源码（3.5）；
-- `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py` 59 行、`pyproject.toml` 的 `xlwings_lite` entry point、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件扩展模式的最小完整样例（3.5）；
-- `xlwings/xlwings/main.py`（BookAsync，L1470）与 `base_classes.py`（异步 get_* 方法族）——异步 API 源码（3.7）；API 文档见 `xlwings/docs/api/book_async.md`；
+- `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py`、`pyproject.toml` 的 `xlwings_lite` entry point、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件扩展模式的最小完整样例（3.5）；
+- `xlwings/xlwings/main.py`（BookAsync）与 `base_classes.py`（异步 get_* 方法族）——异步 API 源码（3.7）；API 文档见 `xlwings/docs/api/book_async.md`；
 - `xlwings/xlwings/__init__.py`（ObjectHandle/ObjectCacheMissError/WithScript）——对象句柄与函数后触发脚本（3.1/3.2）；
 - `xlwings/xlwings/pro/udfs_officejs.py`（streaming_callback、Lite 流式任务分支、_inject_value 懒加载注入）——officejs 引擎侧的 Lite 适配（引擎整体研读见 `references/16-xlwings-officejs.md`，Lite 侧解读见本文件 3.1/3.7）；
 - `examples/taxi-duckdb-main/`（taxi_local.xlsx + extracted/）——阶段七案例；

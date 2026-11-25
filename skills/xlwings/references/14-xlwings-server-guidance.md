@@ -1,6 +1,6 @@
 # 场景 D 附录：xlwings Server 参考手册（开发生命周期工作流）
 
-> 本手册由 `references/13-scenario-d-source-code.md` 1.7 节独立并大幅扩展而来：以开发生命周期工作流重排，深度研读官方仓库 `xlwings-server/` 的六块内容——`docs/`（58 篇官方教程）、`xlwings_server/`（服务端 Python 包）、`deployment/`、`nginx/`、`scripts/`、`tests/`。单点原则：xlwings Server 的一切细节只在本手册展开，13-d 1.7 只保留指针，本手册与 13-d 之间为单向导航。
+> 本手册由 `references/13-scenario-d-source-code.md` 1.7 节独立并大幅扩展而来：以开发生命周期工作流重排，深度研读官方仓库 `xlwings-server/` 的六块内容——`docs/`（官方教程）、`xlwings_server/`（服务端 Python 包）、`deployment/`、`nginx/`、`scripts/`、`tests/`。单点原则：xlwings Server 的一切细节只在本手册展开，13-d 1.7 只保留指针，本手册与 13-d 之间为单向导航。
 
 ## 目录
 
@@ -14,7 +14,7 @@
 - [阶段七 测试、调试与性能](#阶段七-测试调试与性能)
 - [阶段八 部署、运维与升级](#阶段八-部署运维与升级)
 - [附录 A 源码级工程借鉴](#附录-a-源码级工程借鉴)
-- [附录 B 官方文档族地图（58 篇 → 阶段）](#附录-b-官方文档族地图58-篇-阶段)
+- [附录 B 官方文档族地图（按阶段）](#附录-b-官方文档族地图按阶段)
 - [附录 C 与 13-d 的分工](#附录-c-与-13-d-的分工)
 
 ## 0 本手册的定位与使用方式
@@ -33,7 +33,7 @@
 | 四 核心能力开发——自定义函数 | 把 Python 函数暴露为 Excel 公式（转换/命名空间/流式/句柄/后续脚本） | 函数集 + 元数据 | `docs/custom_functions.md`、`xlwings_server/routers/xlwings.py`、`serializ | 函数经真机公式调用返回预期值；流式/句柄（若有）验证通过；元数据生成正确 |ers/`、`object_handles.py`、`custom_functions/` |
 | 五 核心能力开发——自定义脚本与任务窗格 | 写整簿操作脚本 + 构建任务窗格 UI + 产出并安装 manifest | 脚本 + 任务窗格 + manifest | `docs/custom_scripts.md`、`docs/taskpane_*.md`、`docs/jinja.md`、 | 脚本三通道至少一条真机跑通；任务窗格可渲染；manifest 安装验证记录 |`docs/htmx.md`、`docs/alpinejs.md`、`docs/bootstrap.md`、`docs/manifest.md`、`docs/install_officejs_addin.md`、`custom_scripts/`、`templates/` |
 | 六 认证、授权与安全 | 让函数/脚本受保护，分级授权，锁定任务窗格 | 认证配置 + RBAC + 安全头 | `docs/authentication.md`、`docs/authorization.md`、`docs/auth_entraid.md`、`docs/auth_provider | 未登录返回 Access Denied；角色分级生效；安全头生产生效 |s.md`、`docs/auth_taskpane.md`、`auth/`、`dependencies.py`、`security_headers.py` |
-| 七 测试、调试与性能 | 建立质量门禁，掌握调试手段，应用性能配方 | 三层测试 + 验证清单 | `tests/`（64 个文件）、`docs/debugging.md`、`docs/performance.md`、`docs/troubleshooting.md` | 三层测试全绿（对齐官方 tests/ 结构）；调试记录 + 性能基线 |
+| 七 测试、调试与性能 | 建立质量门禁，掌握调试手段，应用性能配方 | 三层测试 + 验证清单 | `tests/`、`docs/debugging.md`、`docs/performance.md`、`docs/troubleshooting.md` | 三层测试全绿（对齐官方 tests/ 结构）；调试记录 + 性能基线 |
 | 八 部署、运维与升级 | 上线并持续演进 | 部署配置 + 生产环境 | `deployment/`、`nginx/`、`scripts/`、`docs/index_hosting.md` 及各托管族、`docs/migration.md`、`docs/was | 部署配置就绪；生产清单核查通过；迁移/升级执行记录 |m_*.md` |
 
 **加载项三件套 ↔ 阶段速查**（Office.js 加载项 = 壳 + 核）：
@@ -138,7 +138,7 @@
 
 ### 1.6 客户端如何连接 Server：remote 引擎（`pro/_xlremote.py`）
 
-- **定位**：xlwings 客户端侧连接 Server 的引擎（`xlwings/xlwings/pro/_xlremote.py`，6170 行完整实现），与 excel/calamine/officejs 并列为 PRO 四引擎；13-d 1.2.3 已压缩为指针，细节在此展开
+- **定位**：xlwings 客户端侧连接 Server 的引擎（`xlwings/xlwings/pro/_xlremote.py`，完整实现），与 excel/calamine/officejs 并列为 PRO 四引擎；13-d 1.2.3 已压缩为指针，细节在此展开
 - **通信方式**：HTTP REST API；对象操作经 `append_json_action` 打包为 JSON 动作（`func`/`args`/`values`/`sheet_position` 等）累积在 `_json["actions"]`，随请求一并发送服务端执行
 - **对象覆盖**：Apps/App/Books/Book/Sheets/Sheet/Range/Names/Name/Pictures/Shapes/Charts/Characters/Note/PageSetup/Border/Borders/Font/FreezePanes/Table/Tables——与桌面引擎同构的高层 API，脚本代码无需感知通道差异
 - **lazy load**：`_SHEET_VALUES_LOADED_KEY = "_xlwings_values_loaded"` 标记 sheet 值是否已加载（元数据先加载、值按需获取）；该标记仅本地读取，不序列化回 JS
@@ -259,7 +259,7 @@
 - `auth/entraid/jwks.py`：`add auth entraid`——气隙 JWKS（阶段六 6.3）
 - `config.py`：`add config`（阶段二 2.4）
 
-### 3.3 CLI 命令全集（`xlwings_server/cli.py`，64KB，最大模块）
+### 3.3 CLI 命令全集（`xlwings_server/cli.py`，最大模块）
 
 - **run**：`run`（开发服务器，等价 `python run.py`）
 - **add 系**：`init` / `config` / `model user` / `auth custom` / `auth entraid` / `router` / `lifespan` / `azure functions` / `docker` / `devcontainer` / `iis`
@@ -398,7 +398,7 @@
 - 可选：`Office.ribbon.requestUpdate` 在请求期间禁用按钮（finally 恢复）
 - 官方 TODO：Ribbon 开发体验待改进（issue #102）
 
-### 5.2b 服务端内置 range/pivot 自定义脚本（`static/js/custom-scripts/`，现 22 个 .js）
+### 5.2b 服务端内置 range/pivot 自定义脚本（`static/js/custom-scripts/`）
 
 xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非业务示例，属 `socket.io` wire 协议的一部分），自研任务窗格若做透视表面板可直接复用：
 
@@ -529,18 +529,18 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 - **输出物**：见 7.6。
 - **验收**：三层测试全绿（对齐官方 tests/ 结构）；性能基线有改造前后对比；故障排查清单已沉淀。
 
-### 7.1 官方测试体系（`tests/` 64 个文件：Python 测试 24 + JS 测试 32 + 配置/数据 8）
+### 7.1 官方测试体系（`tests/`：Python 测试 + JS 测试 + 配置/数据 三层）
 
 **单元测试层（TestClient 打真实端点，mock 外部依赖如 Redis/Graph）**：
 
-- `test_router_xlwings.py`（30KB / 650 行）：custom-functions / custom-scripts 端点全行为
-- `test_object_handles.py`（14KB / 355 行）：缓存后端行为（Redis/LRU 两实现）
+- `test_router_xlwings.py`：custom-functions / custom-scripts 端点全行为
+- `test_object_handles.py`：缓存后端行为（Redis/LRU 两实现）
 - `test_serializers.py`：pandas / numpy / dict / default 四类往返
 - `test_auth_entraid.py` + `test_obo.py`：JWT 校验与 OBO 流
 - `test_security_headers.py` + `test_custom_headers.py`：安全头
 - `test_log_sanitization.py`：日志注入防护
 - `test_dependencies.py` / `test_user_model.py`：依赖注入与 User 模型
-- `test_lifespan.py`（8.8KB）：用户 lifespan 钩子（**子进程隔离**验证 fail-fast 语义）
+- `test_lifespan.py`：用户 lifespan 钩子（**子进程隔离**验证 fail-fast 语义）
 - `test_router_manifest.py` / `test_router_taskpane.py`：manifest 与任务窗格路由
 - `test_static_files.py` / `test_static_file_hasher.py`：静态资源与指纹缓存
 - `test_examples.py` / `test_custom_functions.py` / `test_custom_scripts_args.py` / `test_env2.py`：示例、参数与多环境
@@ -551,7 +551,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 
 **端到端测试层（真实 Excel 运行）**：
 
-- `e2e_custom_functions.py`（23KB / 963 行）+ `e2e_custom_functions.xlsx`：真实 Excel 实例运行自定义函数并断言
+- `e2e_custom_functions.py` + `e2e_custom_functions.xlsx`：真实 Excel 实例运行自定义函数并断言
 - `e2e_custom_scripts.py`：真实脚本执行
 - `tests/object_handles.md`：**手工验证清单**——对象句柄无法全自动覆盖的 7 类行为兜底（卡片隐藏 UUID、`=A1` 复制解析、过期卡片等）
 - 环境文件：`.env.test` / `.env.test2` / `.env.testwasm`（多环境配置隔离）
@@ -635,7 +635,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 
 ### 8.4 构建与镜像脚本（`scripts/`）
 
-- `mirror_officejs.py`（13.6KB）：从 CDN 拉取 office.js，按 build version 目录化（离线/自托管 office.js 用）
+- `mirror_officejs.py`：从 CDN 拉取 office.js，按 build version 目录化（离线/自托管 office.js 用）
 - `officejs_inventory.py`：office.js 资源清单盘点
 - `postinstall.py`：npm install 后 → 前端资产版本化并入 `vendor/` 并回写引用
 - `start.sh`：容器启动入口（uvicorn/gunicorn 启动参数）
@@ -725,11 +725,11 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 - **构建脚本**：前端资产版本化目录 + 引用回写 + 指纹缓存破坏——`scripts/`
 - **测试分层**：单元（TestClient 打真实端点）/ 集成（docker-compose 变体矩阵）/ e2e（真实 Excel + xlsx 断言）/ 手工清单（对象句柄 7 类行为）——`tests/`
 
-## 附录 B 官方文档族地图（58 篇 → 阶段）
+## 附录 B 官方文档族地图（按阶段）
 
 | 文档族 | 文档（docs/） | 对应阶段 |
 |--------|--------------|---------|
-| 导航族（11 篇） | `index.md`、`index_authentication.md`、`index_dev_prerequisites.md`、`index_development_environment.md`、`index_hosting.md`、`index_officejs_addins.md`、`index_other_integrations.md`、`index_server.md`、`index_taskpane.md`、`index_tutorials.md`、`index_wasm.md` | 全阶段入口 |
+| 导航族 | `index.md`、`index_authentication.md`、`index_dev_prerequisites.md`、`index_development_environment.md`、`index_hosting.md`、`index_officejs_addins.md`、`index_other_integrations.md`、`index_server.md`、`index_taskpane.md`、`index_tutorials.md`、`index_wasm.md` | 全阶段入口 |
 | 快速上手 | `quickstart.md`、`local_development.md`、`server_config.md` | 阶段二 |
 | 功能 | `custom_functions.md`、`custom_scripts.md`、`manifest.md`、`install_officejs_addin.md`、`examples.md` | 阶段四/五 |
 | 任务窗格 | `taskpane_intro.md`、`jinja.md`、`bootstrap.md`、`htmx.md`、`alpinejs.md` | 阶段五 |

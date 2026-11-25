@@ -28,7 +28,7 @@ data = sheet['A1:A100000'].options(chunksize=10000).value
 # 不需要：for chunk in data: ... （这是错误用法）
 ```
 
-**本质**：`chunksize` 只控制内部 COM 调用的批次大小，不改变返回类型。源码见 `xlwings/xlwings/conversion/standard.py` 的 `ReadValueFromRangeStage.__call__`（L181-189）：按行切块逐块取 `raw_value`，再 `parts.extend(...)` 汇总成一个 list 返回。
+**本质**：`chunksize` 只控制内部 COM 调用的批次大小，不改变返回类型。源码见 `xlwings/xlwings/conversion/standard.py` 的 `ReadValueFromRangeStage.__call__`：按行切块逐块取 `raw_value`，再 `parts.extend(...)` 汇总成一个 list 返回。
 
 ### 1.3 写入行为
 

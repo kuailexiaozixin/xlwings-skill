@@ -64,7 +64,7 @@ python -c "import sqlite3;c=sqlite3.connect(r'../vba_docs_index.db');print(*c.ex
 对语言层面（非 API 层面）写法不确定时查阅：
 - **Reference/**：内置常量、关键字全集、函数签名、语言级事件、条件编译、错误码
 - **Concepts/Getting-Started/**：变量声明、常量 vs 变量、数组声明与 ReDim、`Set` 语义、过程调用约定、命名冲突规避
-- **How-to/**：按"我要做什么"查阅操作指南（28 篇）
+- **How-to/**：按"我要做什么"查阅操作指南
 
 ### 查证后落笔
 
@@ -110,7 +110,7 @@ python -c "import sqlite3;c=sqlite3.connect(r'../vba_docs_index.db');print(*c.ex
 
 **Formula vs Formula2**：`Formula2` 支持动态数组（溢出引用 `#` 运算符）；`Formula` 为传统公式。差异详见 `../VBA-Docs/excel/Concepts/Cells-and-Ranges/range-formula-vs-formula2.md`。
 
-## 四、单元格与区域引用（源自 VBA-Docs excel/Concepts/Cells-and-Ranges/refer-to-* 系列，共 9 篇）
+## 四、单元格与区域引用（源自 VBA-Docs excel/Concepts/Cells-and-Ranges/refer-to-* 系列）
 
 | 引用方式 | 示例 | 适用 |
 |---------|------|------|
@@ -122,7 +122,7 @@ python -c "import sqlite3;c=sqlite3.connect(r'../vba_docs_index.db');print(*c.ex
 | 行/列 | `Rows(2)`/`Columns("B")` | 整行整列 |
 | 多区域 | `Union(Range("A1"), Range("C3"))` | 非连续区域 |
 
-官方全文：`../VBA-Docs/excel/Concepts/Cells-and-Ranges/refer-to-cells-and-ranges-by-using-a1-notation.md` 等 9 篇。
+官方全文：`../VBA-Docs/excel/Concepts/Cells-and-Ranges/refer-to-cells-and-ranges-by-using-a1-notation.md` 等系列。
 
 ## 五、现有文件迭代（原 04）
 
@@ -194,7 +194,7 @@ powershell -ExecutionPolicy Bypass -File "<skill根>\scripts\apply_vba_to_workbo
 | 路径 | 内容 |
 |------|------|
 | `../VBA-Docs/api/Excel.*.md` | 全部 Excel 对象逐成员（Application/Workbook/Worksheet/Range/ListObject/...） |
-| `../VBA-Docs/excel/Concepts/Cells-and-Ranges/refer-to-*.md` | 单元格/区域引用 9 篇 |
+| `../VBA-Docs/excel/Concepts/Cells-and-Ranges/refer-to-*.md` | 单元格/区域引用 |
 | `../VBA-Docs/excel/Concepts/Cells-and-Ranges/range-formula-vs-formula2.md` | Formula/Formula2 差异 |
 | `../VBA-Docs/excel/Concepts/Controls-DialogBoxes-Forms/create-a-user-form.md` 等 | UserForm 系列 |
 | `../VBA-Docs/excel/Concepts/Controls-DialogBoxes-Forms/activex-controls.md` | ActiveX 控件 |

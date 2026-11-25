@@ -1,6 +1,6 @@
 # xlwings Office.js 引擎深度技术分析与构建工作流
 
-> 本文件由 `references/13-scenario-d-source-code.md` 的 1.2.5 与 1.8 节独立而来：以开发生命周期工作流重排，深度研读 Office.js 引擎源码（`xlwings/pro/_xlofficejs.py` 164 行 + `xlwings/pro/udfs_officejs.py` 1388 行），并结合官方教程（`xlwings-lite/custom-functions.md`、`custom-scripts.md`）与加载项工程实践编排成可执行工作流。
+> 本文件由 `references/13-scenario-d-source-code.md` 的 1.2.5 与 1.8 节独立而来：以开发生命周期工作流重排，深度研读 Office.js 引擎源码（`xlwings/pro/_xlofficejs.py` + `xlwings/pro/udfs_officejs.py`），并结合官方教程（`xlwings-lite/custom-functions.md`、`custom-scripts.md`）与加载项工程实践编排成可执行工作流。
 
 > **三文档分工**：Office.js 引擎同时服务 xlwings Server 与 xlwings Lite/Pyodide。
 >
@@ -62,8 +62,8 @@
 
 ### 〇.2 引擎事实总览
 
-- `xlwings/pro/_xlofficejs.py`（164 行）：值转换层——Engine 单例（`name="officejs"`、`type="remote"`）+ 读写两侧的数据清洗/编码。
-- `xlwings/pro/udfs_officejs.py`（1388 行）：UDF/脚本全链路——装饰器族、签名解析、类型注入、值转换、调用管线、元数据生成、socket.io 会话管理。
+- `xlwings/pro/_xlofficejs.py`：值转换层——Engine 单例（`name="officejs"`、`type="remote"`）+ 读写两侧的数据清洗/编码。
+- `xlwings/pro/udfs_officejs.py`：UDF/脚本全链路——装饰器族、签名解析、类型注入、值转换、调用管线、元数据生成、socket.io 会话管理。
 - 引擎类型：`remote`（走 socket.io 推流），与 `excel`（COM）、`calamine`（只读）并列（四引擎见 `references/13-scenario-d-source-code.md` 1.2）。
 - 配套测试：`tests/test_custom_functions_officejs.py` / `test_custom_scripts_call.py` / `test_jsnull.py` / `test_streaming_*.py`。
 
@@ -113,7 +113,7 @@
 ## 阶段二：manifest 清单与侧载
 
 - **任务**：编写 `manifest.xml`（把加载项声明给 Excel：Id/版本/权限/宿主/函数与脚本的注册位置/任务窗格 SourceLocation），并侧载进 Excel。
-- **要求**：清单元素按微软官方清单参考（docs/manifest，105 篇）核对；侧载走官方机制 `WEF\Developer` 注册 + sideload 容器（Ribbon 命令渲染的必要条件）；开发期用 `127.0.0.1` 而非 `localhost`（环回豁免与证书 SAN 对 IP 更稳）。
+- **要求**：清单元素按微软官方清单参考（docs/manifest）核对；侧载走官方机制 `WEF\Developer` 注册 + sideload 容器（Ribbon 命令渲染的必要条件）；开发期用 `127.0.0.1` 而非 `localhost`（环回豁免与证书 SAN 对 IP 更稳）。
 - **输出物**：`manifest.xml` + 侧载后 Excel 中出现功能区按钮/任务窗格。
 - **验收**：清单静态校验通过（结构/必填项/资源 id 长度 ≤32）+ 真实宿主任务窗格可打开。
 - **官方支撑**：官方 `testing/sideload-office-add-ins-for-testing.md`（侧载总述）、`testing/clear-cache.md`（改代码不生效先清缓存）、`testing/uninstall-add-in.md`（卸载）。
@@ -290,10 +290,10 @@
   - 框架注入类型（CurrentUser/Book）的**签名隐藏与位置无关注入**——服务端框架扩展点的设计；
   - **注册期校验优先**（签名约束、重复名、stream+requiresAddress 互斥都在元数据生成期拒绝）——把错误挡在加载前，而非运行中。
 - **加载项工程化借鉴**（引擎知识落地为可运行加载项）：
-  - **manifest 清单与侧载**——引擎跑在 manifest.xml 定义的任务窗格容器里；清单元素、WEF 注册、sideload 容器的权威结构与做法以微软官方清单参考（docs/manifest，105 篇）为准（见阶段二）；
+  - **manifest 清单与侧载**——引擎跑在 manifest.xml 定义的任务窗格容器里；清单元素、WEF 注册、sideload 容器的权威结构与做法以微软官方清单参考（docs/manifest）为准（见阶段二）；
   - **本地 HTTPS 与 WebView2**——加载项本地开发前提（自签证书、环回豁免、WebView2 运行时），细节见阶段一；
   - **加载项级验证**——清单静态校验、HTTP 冒烟、宿主侧载断言与阶段七的引擎级 pytest 互补，构成"引擎内 + 容器外"双层验证；
-  - **要求集兼容评估**——Office.js requirement-sets 矩阵（92 篇）是版本兼容评估的权威依据，与阶段九能力时间线对照使用。
+  - **要求集兼容评估**——Office.js requirement-sets 矩阵是版本兼容评估的权威依据，与阶段九能力时间线对照使用。
 - **能力时间线**（`docs/whatsnew.md`，演进即"哪些能力是哪一版才有"）：
   - Office.js 支持随 PRO 引入，逐步覆盖：值转换 → 自定义函数 → 流式函数 → 对象句柄 → 脚本（WithScript）→ 动态数组/volatile/枚举 → App Mode 表单；
   - 版本差异直接影响引擎分支：`runtime < 1.4` 的裸值降级、Pyodide ≥ 0.28 的 JsNull 哨兵——升级 Excel/Office.js runtime 前先对照此时间线评估兼容面。
@@ -308,7 +308,7 @@
 | 脚本教程 | `xlwings-lite/custom-scripts.md` |
 | 版本演进 | `xlwings/docs/whatsnew.md` |
 | 配套测试 | `xlwings/tests/test_custom_functions_officejs.py` 等（见阶段七） |
-| 官方清单参考 | 微软 office-js-docs-reference 的 docs/manifest（105 篇）与 requirement-sets（92 篇） |
+| 官方清单参考 | 微软 office-js-docs-reference 的 docs/manifest 与 requirement-sets |
 | 官方测试/发布文档 | Microsoft Learn `testing/` 与 `publish/` 目录（见阶段七/八官方支撑） |
 | 服务端侧 | `references/14-xlwings-server-guidance.md`（Server 运行时） |
 | Lite 适配 | `references/15-xlwings-lite-guidance.md`（浏览器端分支） |

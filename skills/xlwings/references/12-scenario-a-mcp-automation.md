@@ -25,7 +25,7 @@
 | **核心特点** | DRM 保护文件支持、读取用户选区 | 功能最全（20 模块）、线程安全、图表支持 | VBA 宏执行、命名区域 | VBA 宏白名单安全、专用 COM 线程 |
 | **VBA 宏** | 支持（运行已有宏+返回值） | 未明确 | 支持（需 VBA 项目解锁） | 支持（白名单限制） |
 | **跨平台** | Windows（COM） | Windows | Windows/macOS | Windows（COM）/ 其他（Mock） |
-| **源码模块数** | 较少（src/ 下少量文件） | 快照 7 个（xlwings_impl 子包未随 OSS 发布） | 2 个（main.py+server.py 35KB） | 4 个（server/base/windows_com/demo） |
+| **源码模块数** | 较少（src/ 下少量文件） | 少量模块（xlwings_impl 子包未随 OSS 发布） | 2 个（main.py+server.py） | 4 个（server/base/windows_com/demo） |
 | **许可** | MIT | MIT | 未明确 | 未明确 |
 | **文档语言** | 英文 | 英文 | 英文 | 越南语（注释/README） |
 
@@ -93,11 +93,11 @@ claude mcp add xlwings -- uvx mcp-server-xlwings
 - **自动资源管理**：TTL 会话清理 + LRU 淘汰策略
 - **零错误设计**：全面错误处理
 
-**源码模块**（开源快照 `src/xlwings_mcp/` 实际仅 7 个文件）：
+**源码模块**（开源快照 `src/xlwings_mcp/`）：
 | 模块 | 职责 |
 |------|------|
 | `__main__.py` | 入口（fastmcp app） |
-| `server.py` | MCP Server 主逻辑（1652 行，34 个工具函数分发；`workbook_xlw`/`sheet_xlw` 等经 `xlwings_mcp.xlwings_impl.*` 导入） |
+| `server.py` | MCP Server 主逻辑（34 个工具函数分发；`workbook_xlw`/`sheet_xlw` 等经 `xlwings_mcp.xlwings_impl.*` 导入） |
 | `session.py` | 会话管理（TTL/LRU） |
 | `workbook.py` / `sheet.py` | 工作簿/工作表操作（legacy API） |
 | `exceptions.py` | 异常体系 |
@@ -153,7 +153,7 @@ client.call_tool("apply_formula", {
 - 连接**实时** Excel 工作簿（不打开新实例，操作已打开的文件）
 - 支持 VBA 宏执行
 - 列出命名区域
-- server.py 35KB（主要逻辑集中在此）
+- server.py（主要逻辑集中在此）
 
 **关键要求**（README 原文）：
 | 要求 | 细节 |
