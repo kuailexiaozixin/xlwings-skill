@@ -76,8 +76,8 @@
       "repo": "xlwings/xlwings-sqlookup",
       "ref": "main",
       "subpath": "",
-      "pinned_sha": "b7935504dbf49daf7bf838bff92ffdd487c8d03f",
-      "last_synced": "2026-11-19"
+      "pinned_sha": "cf20fd23f86fff90549c0db104405e73316ae85b",
+      "last_synced": "2026-11-26"
     },
     {
       "id": "mcp-server-xlwings",

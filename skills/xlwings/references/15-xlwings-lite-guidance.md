@@ -452,8 +452,9 @@ Excel 用法：`=SQL("SELECT ...", ["alias1"], range1, ["alias2"], range2, ...)`
   - 结果按 `expand="table"` 溢出到相邻单元格，首行为列名；带空格/特殊字符的列名用 `[Order ID]`，或 SQL 标准双引号（Excel 公式内写成 `""Order ID""`）。
 - **日期列（相对 `=SQL()` 的增量能力）**：Excel 把日期以序列号（如 `45306`）传给自定义函数，`=SQLOOKUP(..., "order_date, signup_date")` 把**最后一个参数**当作"逗号分隔的日期列名清单"，把这些列转成 ISO 文本再进 SQLite（列名**精确匹配、忽略大小写**；空单元格/文本/`TRUE`/`FALSE` 原样保留）；返回时日期列写回 Excel 日期，SQL 函数算出的日期（如 `date(order_date)`）为文本。注意陷阱：`BETWEEN ... AND '2024-01-31'` 会漏掉最后一天（`2024-01-31 00:00:00` 排在 `2024-01-31` 之后），改用 `order_date < '2024-02-01'` 或 `date(order_date) <= '2024-01-31'`。因为"末参单格文本即日期清单"，**每个别名后必须跟一个区域**。
 - **与 SQLookup 加载项互斥**：两者都注册名为 `SQLOOKUP` 的函数，不能同时安装；从加载项迁移的步骤是先移除加载项 → 按微软文档清 Office 缓存（会一并清掉 Lite 的本地环境变量与已导入文件，需先备份）→ 装插件。
+- **自带 App Mode 页（custom app）**：插件还内置一个 Lite App Mode 自定义页面（`src/xlwings_sqlookup/` 下的 `index.html`/`style.css`/`app.js` + `scripts.py`），进入 App Mode 后展示 `SQLOOKUP` 语法说明，并提供「Insert examples into a new sheet」按钮，点击经 `xlwings.runScript('insert_sample_sheet')` 由 `scripts.py` 用 `@script` 生成含示例表格与 `=SQLOOKUP` 公式的新工作表；若工作簿另有 App Mode 视图或多个带页插件，在 **Switch app** 下选 SQLookup。
 
-**源码验证**（`xlwings-sqlookup/src/xlwings_sqlookup/functions.py`）：`@func` + `@arg("query")` + `@arg("*arg", ndim=2)` 的 `sqlookup()` 只做三件事——① 末参单格文本识别为日期列清单（`_is_single_string`，判定规则与 `_sql` 辨识别名同源）；② `_parse_dates` 按列名下标把数值序列号换成 `xw.to_datetime(value)`，无匹配列/仅有表头/别名项均原样返回；③ 处理后的表直接投给 `xlwings.ext.sql._sql`——**与 `=SQL()` 共用同一个实现**，故建表/别名/写回语义完全一致，差别只在入口形态与日期支持。源码刻意**不设 `__xlwings_func_namespace__`**：函数名必须恰好是 `=SQLOOKUP(...)`。插件经 `pyproject.toml` 的 `[project.entry-points.xlwings_lite]` 声明（`sqlookup = "xlwings_sqlookup.functions"`），依赖 `xlwings>=0.37.10`（用到 ext.sql 的 `datetime()` 比较与混合类型列），并声明 `sqlite3; sys_platform == "emscripten" and python_version < "3.14"`（Pyodide 314 之前的 sqlite3 是独立包）。
+**源码验证**（`xlwings-sqlookup/src/xlwings_sqlookup/functions.py`）：`@func` + `@arg("query")` + `@arg("*arg", ndim=2)` 的 `sqlookup()` 只做三件事——① 末参单格文本识别为日期列清单（`_is_single_string`，判定规则与 `_sql` 辨识别名同源）；② `_parse_dates` 按列名下标把数值序列号换成 `xw.to_datetime(value)`，无匹配列/仅有表头/别名项均原样返回；③ 处理后的表直接投给 `xlwings.ext.sql._sql`——**与 `=SQL()` 共用同一个实现**，故建表/别名/写回语义完全一致，差别只在入口形态与日期支持。源码刻意**不设 `__xlwings_func_namespace__`**：函数名必须恰好是 `=SQLOOKUP(...)`。插件经 `pyproject.toml` 的 `[project.entry-points.xlwings_lite]` 声明 `functions`（`sqlookup = "xlwings_sqlookup.functions"`）与 `scripts` 两个入口，依赖 `xlwings>=0.37.10`（用到 ext.sql 的 `datetime()` 比较与混合类型列），并声明 `sqlite3; sys_platform == "emscripten" and python_version < "3.14"`（Pyodide 314 之前的 sqlite3 是独立包）。
 
 **开发含义**：① 要让终端用户完全不写 Python 就用上 SQL 分析，这是现成答案；② 它同时是"Lite 插件 = `@func` + `xlwings_lite` entry point + `requirements.txt` 一行"这一扩展模式的**最小完整样例**，照此可开发自有插件；③ 插件内任何需要 Excel 日期语义的逻辑，都要自己处理序列号（Lite 不会替自定义函数转换）。
 
@@ -768,7 +769,7 @@ Lite 持续演进中，开发与分发时关注以下维度（具体版本号见
 - `xlwings-lite/`（官方文档离线镜像 + README 索引 + 插图，至 1.0.0.113，含 wingman/settings/beta/custom-app）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
 - `xlwings/xlwings/udfs.py`——`@func`/`@arg`/`@ret`/`@script` 装饰器实现（Lite 与桌面版同源，3.1/3.2 源码验证）；
 - `xlwings/xlwings/ext/`（sql.py + __init__.py）——`=SQL()` 扩展源码（3.5）；
-- `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py`、`pyproject.toml` 的 `xlwings_lite` entry point、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件扩展模式的最小完整样例（3.5）；
+- `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py`、`scripts.py` 与 App Mode 页 `index.html`/`app.js`/`style.css`、`pyproject.toml` 的 `xlwings_lite` 双入口、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件 + 自定义 App Mode 页的完整样例（3.5）；
 - `xlwings/xlwings/main.py`（BookAsync）与 `base_classes.py`（异步 get_* 方法族）——异步 API 源码（3.7）；API 文档见 `xlwings/docs/api/book_async.md`；
 - `xlwings/xlwings/__init__.py`（ObjectHandle/ObjectCacheMissError/WithScript）——对象句柄与函数后触发脚本（3.1/3.2）；
 - `xlwings/xlwings/pro/udfs_officejs.py`（streaming_callback、Lite 流式任务分支、_inject_value 懒加载注入）——officejs 引擎侧的 Lite 适配（引擎整体研读见 `references/16-xlwings-officejs.md`，Lite 侧解读见本文件 3.1/3.7）；
