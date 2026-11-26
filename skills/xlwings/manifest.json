@@ -28,9 +28,9 @@
       "base_url": "https://lite.xlwings.org/",
       "llms_url": "https://lite.xlwings.org/llms-full.txt",
       "index_url": "https://lite.xlwings.org/llms.txt",
-      "pinned_version": "1.0.0.113",
-      "pinned_full_sha": "e1a5d9f830751bd266d01747b898125876a55a5a9ebe60d6fd848b252b3996b4",
-      "last_synced": "2026-11-25",
+      "pinned_version": "1.0.0.114",
+      "pinned_full_sha": "55926acfdc32d24d36d296ba8c9aa922b403ffe08e39132560b73881f29d40c3",
+      "last_synced": "2026-11-26",
       "pinned_pages": [
         "about.md",
         "app-mode.md",

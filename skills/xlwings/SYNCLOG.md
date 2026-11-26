@@ -147,3 +147,6 @@
 | 2026-11-26 | `xlwings-sqlookup` | codeload | `cf20fd2` | 18 个文件 |
 
 > 2026-11-26 `xlwings-sqlookup` 同步审计（force 全量 codeload，`b793550`→`cf20fd2`）：上游新增 **Lite App Mode 自定义页**——`src/xlwings_sqlookup/` 新增 `index.html`/`style.css`/`app.js` + `scripts.py`，`pyproject.toml` 的 `[project.entry-points.xlwings_lite]` 增 `scripts` 第二入口；插件进入 App Mode 后展示 SQLOOKUP 语法说明并提供「Insert examples」按钮（`runScript('insert_sample_sheet')` 生成含示例表与公式的新工作表）。`functions.py`（`=SQLOOKUP` 本体）本次**未改动**，函数级描述无需调整。自研同步：references/15 sqlookup 小节新增「自带 App Mode 页」bullet、entry point 改述为双入口、可配套行补 App Mode 文件；SKILL.md:245 资源地图补「自带 App Mode 示例页」。按写作纪律未写任何计数/行号。`track_upstream.py` 复跑 PASS（线② 1 锚点一致）。
+| 2026-11-26 | `xlwings-lite` | web(新图 0) | `1.0.0.114` | 36 页 / 79 文件 |
+
+> 2026-11-26 `xlwings-lite` 同步审计（web 源，`1.0.0.113`→`1.0.0.114`，页面结构不变、无新增图）：上游三处功能新增——① **新建工作簿不再自动加载示例代码与 `requirements.txt`**（存量工作簿不受影响；如用 pandas 等依赖需先写入 `requirements.txt`）；② **正式支持 pytest-asyncio**（异步测试）；③ **插件支持自定义应用**（custom app 可作插件形式分发）。自研同步：SKILL.md L245 资源地图、references/15 L15/L769 内容来源、xlwings-lite/README.md 抓取行 + custom-app 索引行，版本基准 113→114；语义补充：references/15 quickstart 段补「新建工作簿行为」注、4.1 异步测试 bullet 改为 pytest-asyncio、5.1 Custom App bullet 补「亦支持插件分发」。按写作纪律未写任何计数/行号。`track_upstream.py` 复跑 PASS（线① 19 源全 OK、线② 1 锚点一致、线③ PASS）。

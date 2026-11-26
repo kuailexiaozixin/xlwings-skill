@@ -1,11 +1,11 @@
 ﻿{
   "_comment": "自研文档对上游的结构存在性锚点（不再追踪行数/KB/篇数/页/张/文件数/行号等易变计数——见 SKILL §0：文档不引用上游不稳定计数）。snapshot 记录各源已同步到的 commit/版本，updated 为最近同步日。",
-  "updated": "2026-11-25",
+  "updated": "2026-11-26",
   "snapshot": {
     "xlwings": "a8b6301",
     "xlwings-server": "4f6511b",
-    "xlwings-lite": "1.0.0.113",
-    "xlwings-sqlookup": "b793550"
+    "xlwings-lite": "1.0.0.114",
+    "xlwings-sqlookup": "cf20fd2"
   },
   "facts": [
     {

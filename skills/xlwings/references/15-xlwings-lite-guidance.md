@@ -12,7 +12,7 @@
 > 5. **参考**：editor → tests → configuration → environment-variables → troubleshooting → faq → changelog / about / settings / beta。
 > 开发时按"入门 → 进阶 → 分发 → 自托管"的官方路径推进；本文件阶段一/二承载选型与准备，阶段三按"入门组 → 进阶组"展开，阶段四/五/六对应参考/分发/自托管组，阶段七以完整案例收束。
 >
-> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档离线镜像（至 1.0.0.113，含 custom-app 新页与 databases/plugins、wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
+> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档离线镜像（至 1.0.0.114，含 custom-app 新页与 databases/plugins、wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
 
 ## 目录
 
@@ -217,7 +217,7 @@ __all__ = "sql", "sql_dynamic"
 2. 搜索 `xlwings`；
 3. 点击 `Add` 安装。
 
-安装后 `Home` 选项卡右端出现 xlwings Lite 按钮，点击打开右侧任务窗格编辑器。`main.py` 自带示例代码：`=HELLO("World")` 调用自定义函数，绿色 Run Hello World 按钮（或 F5）运行脚本。
+安装后 `Home` 选项卡右端出现 xlwings Lite 按钮，点击打开右侧任务窗格编辑器。`main.py` 自带示例代码：`=HELLO("World")` 调用自定义函数，绿色 Run Hello World 按钮（或 F5）运行脚本。（1.0.0.114 起，新建工作簿不再自动加载示例代码与 `requirements.txt`，存量工作簿不受影响；若要用 pandas 等需先写入 `requirements.txt`。）
 
 **企业环境**：加载项商店被封锁时，由 IT/Office 管理员从 Microsoft 365 管理中心安装，或自托管（阶段六）。**卸载**：`Add-ins` → `More Add-ins` → `Manage your Apps` → 三点菜单 → `Remove`。
 
@@ -531,7 +531,7 @@ Lite 内置 pytest 运行器，可测试 Python 代码与工作簿本身：
 
 - **测试文件与函数**：任务窗格 Test 标签页发现并运行 `test_*.py` 中 `test_*` 函数；`pytest.main()` 可直接调用；
 - **导入自己的代码**：`test_main.py` 中 `import main`（或测试文件与被测模块同目录），测试 `main.py` 的纯函数与转换逻辑；
-- **异步测试**：pytest 原生支持 `async def test_...`（anyio/asyncio 插件），配合 Lite 异步 API 写 `await` 断言；
+- **异步测试**：pytest 支持 `async def test_...`（1.0.0.114 起正式支持 pytest-asyncio；此前走 anyio/asyncio 插件），配合 Lite 异步 API 写 `await` 断言；
 - **访问活动工作簿**：测试中 `xw.books.active`（或异步 `await xw.books.get_active()`）拿到当前簿做集成断言；
 - **pytest 配置**：任务窗格可配置 pytest 参数（如 `-k` 选择、`--tb` 回溯格式）。
 
@@ -574,7 +574,7 @@ Lite 内置 pytest 运行器，可测试 Python 代码与工作簿本身：
 
 **工程价值**：一个 .xlsx + 加载项 = 完整的终端应用（表单输入 + 按钮动作 + 函数计算 + 输出），是"Excel 作为应用壳"的最轻交付形态。
 
-- **Custom App（1.0.0.113 起）**：App Mode 可用自有页面替换默认按钮/表单（`custom-app.md`）——在工作簿加 `index.html` 源文件（可选配 `.css`/`.js`），页面用 `xlwings.runScript()` 调用 Python 脚本；最省事的做法是直接用 Wingman 生成这套 HTML/CSS/JS，再按 Ctrl/Cmd+Shift+M 进 App Mode 显示。
+- **Custom App（1.0.0.113 起；1.0.0.114 起亦支持以插件形式分发）**：App Mode 可用自有页面替换默认按钮/表单（`custom-app.md`）——在工作簿加 `index.html` 源文件（可选配 `.css`/`.js`），页面用 `xlwings.runScript()` 调用 Python 脚本；最省事的做法是直接用 Wingman 生成这套 HTML/CSS/JS，再按 Ctrl/Cmd+Shift+M 进 App Mode 显示。
 
 ### 5.2 文件、安全与隐私
 
@@ -766,7 +766,7 @@ Lite 持续演进中，开发与分发时关注以下维度（具体版本号见
 
 ## 可配套阅读
 
-- `xlwings-lite/`（官方文档离线镜像 + README 索引 + 插图，至 1.0.0.113，含 wingman/settings/beta/custom-app）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
+- `xlwings-lite/`（官方文档离线镜像 + README 索引 + 插图，至 1.0.0.114，含 wingman/settings/beta/custom-app）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
 - `xlwings/xlwings/udfs.py`——`@func`/`@arg`/`@ret`/`@script` 装饰器实现（Lite 与桌面版同源，3.1/3.2 源码验证）；
 - `xlwings/xlwings/ext/`（sql.py + __init__.py）——`=SQL()` 扩展源码（3.5）；
 - `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py`、`scripts.py` 与 App Mode 页 `index.html`/`app.js`/`style.css`、`pyproject.toml` 的 `xlwings_lite` 双入口、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件 + 自定义 App Mode 页的完整样例（3.5）；
