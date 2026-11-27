@@ -150,3 +150,5 @@
 | 2026-11-26 | `xlwings-lite` | web(新图 0) | `1.0.0.114` | 36 页 / 79 文件 |
 
 > 2026-11-26 `xlwings-lite` 同步审计（web 源，`1.0.0.113`→`1.0.0.114`，页面结构不变、无新增图）：上游三处功能新增——① **新建工作簿不再自动加载示例代码与 `requirements.txt`**（存量工作簿不受影响；如用 pandas 等依赖需先写入 `requirements.txt`）；② **正式支持 pytest-asyncio**（异步测试）；③ **插件支持自定义应用**（custom app 可作插件形式分发）。自研同步：SKILL.md L245 资源地图、references/15 L15/L769 内容来源、xlwings-lite/README.md 抓取行 + custom-app 索引行，版本基准 113→114；语义补充：references/15 quickstart 段补「新建工作簿行为」注、4.1 异步测试 bullet 改为 pytest-asyncio、5.1 Custom App bullet 补「亦支持插件分发」。按写作纪律未写任何计数/行号。`track_upstream.py` 复跑 PASS（线① 19 源全 OK、线② 1 锚点一致、线③ PASS）。
+| 2026-11-27 | `xlwings` | incremental（2 处变更） | `62cbd08` | 457 个文件 |
+| 2026-11-27 | `xlwings-lite` | web(新图 0) | `1.0.0.115` | 36 页 / 79 文件 |

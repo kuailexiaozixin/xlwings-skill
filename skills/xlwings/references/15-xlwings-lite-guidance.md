@@ -5,14 +5,14 @@
 > **与 13/16 号文档的分工**：13 号文档保留 PRO 许可证机制、四引擎原理、Reports 架构、code embed/release 部署等 PRO 专有内容；Office.js 引擎**整体**源码研读（`pro/_xlofficejs.py` + `pro/udfs_officejs.py` 全链路）已独立为 `references/16-xlwings-officejs.md`（值转换层 / UDF 全链路 / 脚本全链路 / socket.io 会话，Server 与 Lite 共享的语义内核）；凡属 **Lite 特有**的适配分支（Pyodide 环境的 JsNull 空值归一、流式函数 `streaming_callback` 直推与 Lite 侧任务重启、`BookAsync` 注解的懒加载注入）由本文件对应小节承接（机制细节处指向 16 号），13 号 1.8 仅保留指针。本文件聚焦 xlwings Lite 的**产品能力、运行机制、开发工作流与全部 Lite 相关源码研读**。
 >
 > **官方教程的层次结构**（lite.xlwings.org 文档体系，本文件按此组织叙述顺序，各节均标注对应官方文档）：
-> 1. **入门**：index → quickstart → custom-functions → custom-scripts → notebooks → wingman（1.0.0.105 编码智能体）；
+> 1. **入门**：index → quickstart → custom-functions → custom-scripts → notebooks → wingman（编码智能体）；
 > 2. **进阶（数据与集成）**：dependencies → databases → web-requests → async-api → plotting；
 > 3. **分发（应用化与共享）**：app-mode → personal-modules → files → security → limitations；
 > 4. **自托管**：self-hosting → hosting-solutions → linux-vm / azure-container-apps / aws-ecs-express / migrating-to-self-hosted；
 > 5. **参考**：editor → tests → configuration → environment-variables → troubleshooting → faq → changelog / about / settings / beta。
 > 开发时按"入门 → 进阶 → 分发 → 自托管"的官方路径推进；本文件阶段一/二承载选型与准备，阶段三按"入门组 → 进阶组"展开，阶段四/五/六对应参考/分发/自托管组，阶段七以完整案例收束。
 >
-> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档离线镜像（至 1.0.0.114，含 custom-app 新页与 databases/plugins、wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
+> **内容来源**：① `xlwings-lite/`（lite.xlwings.org 官方文档离线镜像（含 custom-app 新页与 databases/plugins、wingman/settings/beta），本文件按阶段语义引用，不重复全文）；② `xlwings/xlwings/` 源码（ext 包、main.py、base_classes.py、__init__.py、udfs.py、pro/udfs_officejs.py 的 Lite 分支）——每节"源码验证"块给出官方教程结论对应的实现位置；③ `examples/taxi-duckdb-main/`（Lite 完整案例）；④ `xlwings-sqlookup/`（官方 `SQLOOKUP` 插件源码，见 3.5 插件小节）。
 
 ## 目录
 
@@ -71,7 +71,7 @@
 - **"Install the free add-in from Excel's add-in store"**：Lite **本身就是加载项**（Office Web Add-in，应用商店 ID `WA200008175`，见阶段七 7.2 的 OMEX 引用）——它是**成品**，不是让你开发的开发框架；安装动作发生在 Excel 的 `Add-ins` 入口内。
 - **"and you're done"**：安装即完成——**无需安装 Python、无需配置解释器、无需命令行**。Python 运行时随加载项从 Pyodide CDN 拉取（阶段二 2.2），编辑器里 `main.py` 已含 `=HELLO("World")` 示例，安装后即可写出并运行第一个自定义函数。
 - **"VS Code-like editor"**：加载项内置 Monaco 内核编辑器（`editor.md`），写 `.py` 模块的代码编辑体验与 VS Code 一致（快捷键/自动补全/输出窗格）。
-- **"Wingman"**：内置 AI 助手（聊天 + `=WINGMAN()` 函数，可连 Claude/Gemini/OpenAI/自托管模型）；1.0.0.105 起升级为**编码智能体**（`wingman.md`/`beta.md`）——可直接改写工作簿并产出可复用的 Python 脚本/函数/笔记本，无需为每次复用消耗 AI token。
+- **"Wingman"**：内置 AI 助手（聊天 + `=WINGMAN()` 函数，可连 Claude/Gemini/OpenAI/自托管模型）；已升级为**编码智能体**（`wingman.md`/`beta.md`）——可直接改写工作簿并产出可复用的 Python 脚本/函数/笔记本，无需为每次复用消耗 AI token。
 
 **Lite 与"开发 Excel 加载项"的关系——三种语境必须分清**：
 
@@ -104,7 +104,7 @@ Lite 提供六类核心能力（`index.md` "What you can do"，各自详展于�
 | **Web API 访问** | `httpx` 等 | 浏览器内发 HTTP 请求拉外部 API 数据 | 浏览器 fetch 通道（`web-requests.md`） |
 | **App Mode** | Ctrl+Shift+M | 隐藏代码编辑器、脚本按钮化、自动生成表单字段，工作簿变成终端用户应用 | 加载项 UI 层（`app-mode.md`） |
 
-**开发者体验**（`index.md` "Developer experience"）：VS Code 内核编辑器（快捷键/自动补全/输出窗格）、内置 pytest 运行器、个人模块（跨工作簿共享代码，类似 `Personal.xlsb`，可用 Git 管理）、Wingman AI 助手与编码智能体（`wingman.md`/`beta.md`，1.0.0.105 起可直改工作簿并生成可复用 Python）。
+**开发者体验**（`index.md` "Developer experience"）：VS Code 内核编辑器（快捷键/自动补全/输出窗格）、内置 pytest 运行器、个人模块（跨工作簿共享代码，类似 `Personal.xlsb`，可用 Git 管理）、Wingman AI 助手与编码智能体（`wingman.md`/`beta.md`，可直接改写工作簿并生成可复用 Python）。
 
 ### 1.3 适用场景与边界
 
@@ -217,7 +217,7 @@ __all__ = "sql", "sql_dynamic"
 2. 搜索 `xlwings`；
 3. 点击 `Add` 安装。
 
-安装后 `Home` 选项卡右端出现 xlwings Lite 按钮，点击打开右侧任务窗格编辑器。`main.py` 自带示例代码：`=HELLO("World")` 调用自定义函数，绿色 Run Hello World 按钮（或 F5）运行脚本。（1.0.0.114 起，新建工作簿不再自动加载示例代码与 `requirements.txt`，存量工作簿不受影响；若要用 pandas 等需先写入 `requirements.txt`。）
+安装后 `Home` 选项卡右端出现 xlwings Lite 按钮，点击打开右侧任务窗格编辑器。`main.py` 自带示例代码：`=HELLO("World")` 调用自定义函数，绿色 Run Hello World 按钮（或 F5）运行脚本。（新建工作簿不再自动加载示例代码与 `requirements.txt`，存量工作簿不受影响；若要用 pandas 等需先写入 `requirements.txt`。）
 
 **企业环境**：加载项商店被封锁时，由 IT/Office 管理员从 Microsoft 365 管理中心安装，或自托管（阶段六）。**卸载**：`Add-ins` → `More Add-ins` → `Manage your Apps` → 三点菜单 → `Remove`。
 
@@ -281,7 +281,7 @@ Pyodide（WebAssembly 版 Python 解释器，从 CDN 加载）
 
 ### 3.1 自定义函数（Custom Functions）
 
-**对应文档**：`xlwings-lite/custom-functions.md`（本技能镜像，53 个代码块全量保留）。
+**对应文档**：`xlwings-lite/custom-functions.md`（本技能镜像）。
 
 **核心语法**（`custom-functions.md` "Basic syntax"）：
 
@@ -444,7 +444,7 @@ Excel 用法：`=SQL("SELECT ...", ["alias1"], range1, ["alias2"], range2, ...)`
 
 **官方 Lite 插件 `xlwings-sqlookup`（`=SQLOOKUP`）**——把上面这层能力封装成**用户零 Python 代码**的即装即用插件（`xlwings-sqlookup/`，官方组织仓库，跟 `main`）：
 
-- **启用方式**：在工作簿的 `requirements.txt` 里加一行 `xlwings-sqlookup` → 重启 xlwings Lite → 本工作簿所有单元格即可用 `=SQLOOKUP(...)`。插件**按工作簿激活**，每个要用它的工作簿都要各自声明；用户不写任何 Python。
+- **启用方式**：在 **Main menu → Plugins** 中一键安装；带有 custom app 的插件安装后会自动以 **App Mode** 打开。仍可在工作簿的 `requirements.txt` 写 `xlwings-sqlookup` 后在重启 Lite 时加载。插件**按工作簿激活**，每个要用它的工作簿都要各自声明；用户不写任何 Python。
 - **语法**：`=SQLOOKUP(query, [alias1], range1, [alias2], range2, ..., [parse_dates])`
   - `query`：SQL 文本，或指向存放 SQL 的单元格（`=SQLOOKUP(F1, ...)`）；
   - `range1/range2/...`：要查询的区域或 Excel 表格，**首行须为列名**；Excel 表格用 `Table1[#All]` 传整表（含表头）；
@@ -531,7 +531,7 @@ Lite 内置 pytest 运行器，可测试 Python 代码与工作簿本身：
 
 - **测试文件与函数**：任务窗格 Test 标签页发现并运行 `test_*.py` 中 `test_*` 函数；`pytest.main()` 可直接调用；
 - **导入自己的代码**：`test_main.py` 中 `import main`（或测试文件与被测模块同目录），测试 `main.py` 的纯函数与转换逻辑；
-- **异步测试**：pytest 支持 `async def test_...`（1.0.0.114 起正式支持 pytest-asyncio；此前走 anyio/asyncio 插件），配合 Lite 异步 API 写 `await` 断言；
+- **异步测试**：pytest 支持 `async def test_...`（原生支持 pytest-asyncio），配合 Lite 异步 API 写 `await` 断言；
 - **访问活动工作簿**：测试中 `xw.books.active`（或异步 `await xw.books.get_active()`）拿到当前簿做集成断言；
 - **pytest 配置**：任务窗格可配置 pytest 参数（如 `-k` 选择、`--tb` 回溯格式）。
 
@@ -574,7 +574,7 @@ Lite 内置 pytest 运行器，可测试 Python 代码与工作簿本身：
 
 **工程价值**：一个 .xlsx + 加载项 = 完整的终端应用（表单输入 + 按钮动作 + 函数计算 + 输出），是"Excel 作为应用壳"的最轻交付形态。
 
-- **Custom App（1.0.0.113 起；1.0.0.114 起亦支持以插件形式分发）**：App Mode 可用自有页面替换默认按钮/表单（`custom-app.md`）——在工作簿加 `index.html` 源文件（可选配 `.css`/`.js`），页面用 `xlwings.runScript()` 调用 Python 脚本；最省事的做法是直接用 Wingman 生成这套 HTML/CSS/JS，再按 Ctrl/Cmd+Shift+M 进 App Mode 显示。
+- **Custom App（支持以插件形式分发；插件一键安装后自动打开 App Mode）**：App Mode 可用自有页面替换默认按钮/表单（`custom-app.md`）——在工作簿加 `index.html` 源文件（可选配 `.css`/`.js`），页面用 `xlwings.runScript()` 调用 Python 脚本；最省事的做法是直接用 Wingman 生成这套 HTML/CSS/JS，再按 Ctrl/Cmd+Shift+M 进 App Mode 显示。
 
 ### 5.2 文件、安全与隐私
 
@@ -677,18 +677,18 @@ Lite 内置 pytest 运行器，可测试 Python 代码与工作簿本身：
 **仓库构成**（`examples/taxi-duckdb-main/taxi-duckdb-main/`）：
 - `LICENSE`（MIT）；
 - `taxi_local.xlsx`——全部应用逻辑在此一个文件；
-- `extracted/`——本技能提取的内嵌源码（`README.md` 目录说明）：`extract_webextension.py`（一步到位提取脚本：解包 + 解码，stdlib 无依赖）、`full/`（完整解包产物：12 个 zip 条目原样落盘 + `main.py` 98 行 / `requirements.txt` 解码明文就地生成于 `xl/webextensions/`——解包即解码，无第二目录）。
+- `extracted/`——本技能提取的内嵌源码（`README.md` 目录说明）：`extract_webextension.py`（一步到位提取脚本：解包 + 解码，stdlib 无依赖）、`full/`（完整解包产物：zip 条目原样落盘 + `main.py` / `requirements.txt` 解码明文就地生成于 `xl/webextensions/`——解包即解码，无第二目录）。
 
 ### 7.2 xlsx 内嵌结构解密
 
-zip 解包 `taxi_local.xlsx`（xlsx 本质是 zip，`extract_webextension.py` 完整落盘 12 个条目）：
+zip 解包 `taxi_local.xlsx`（xlsx 本质是 zip，`extract_webextension.py` 完整落盘）：
 
 - `xl/webextensions/webextension1.xml`：加载项定义——AppSource 引用 `wa200008175`（xlwings 官方 OMEX 加载项）、`xlwingsWorkbookId`（UUID `a0403022-...`）、`pyodideVersion=0.27.5`、`addinVersion=1.0.0.0-35`；
 - `xl/webextensions/taskpanes.xml`：任务窗格右侧停靠、宽 837、可见；`xlwingsSettingsWorkbook={"startupBehavior":"taskpane"}`——打开工作簿即启动窗格；
 - 六个 `we:property` 承载全部应用内容：`main.py`（后端脚本全文，**HTML 实体 + JSON 字符串双重编码**）、`requirements.txt`（依赖清单）、运行参数与设置；
 - `xl/worksheets/sheet1.xml`：`<sheetData/>` 空表——数据全部由脚本运行时写入，文件只是"壳"。
 
-**双编码必然性**：XML 属性值只能是单行文本，整段 Python 必须两次转换才能安全落位（先转义成合法属性字符 `&quot;`/`&gt;`，再包成合法 JSON 字符串）；还原即反向 `html.unescape` + `json.loads`——`extract_webextension.py` 已工具化，实测还原 98 行 / 2528 字符与原文一致。
+**双编码必然性**：XML 属性值只能是单行文本，整段 Python 必须两次转换才能安全落位（先转义成合法属性字符 `&quot;`/`&gt;`，再包成合法 JSON 字符串）；还原即反向 `html.unescape` + `json.loads`——`extract_webextension.py` 已工具化，实测还原结果与原文一致。
 
 ### 7.3 Python 代码的嵌入与执行机制
 
@@ -758,7 +758,7 @@ Lite 持续演进中，开发与分发时关注以下维度（具体版本号见
 - **运行时与包管理**：Pyodide 版本升级（内存、兼容包列表变化）、requirements-pinned.txt 机制引入（锁定可复现性）、包安装 UI 演进；
 - **API 能力**：Object handles（≥0.36.5）、异步 API（`get_value`/`flush`/`load`）、流式函数、`WithScript`、绘图与图片缓存机制；
 - **应用形态**：App Mode 表单字段扩展（更多类型提示 → 控件映射）、Notebooks 能力（Markdown 单元格、LaTeX、顶层 await）、测试运行器（pytest 集成）；
-- **AI 编码智能体（Wingman，1.0.0.105 起）**：由「聊天 + `=WINGMAN()`」升级为可直接改写工作簿的编码智能体（`wingman.md`/`beta.md`）——产出可复用的 Python 脚本/函数/笔记本、本地处理大数据集、可连自托管 LLM；
+- **AI 编码智能体（Wingman）**：由「聊天 + `=WINGMAN()`」升级为可直接改写工作簿的编码智能体（`wingman.md`/`beta.md`）——产出可复用的 Python 脚本/函数/笔记本、本地处理大数据集、可连自托管 LLM；
 - **安全与合规**：信任提示策略、CSP/SRI 加固、Wingman 隐私边界、图片缓存自托管化；
 - **自托管**：xlwings-lite CLI、容器化方案（Azure Container Apps / AWS ECS Express）、内网包镜像支持。
 
@@ -766,7 +766,7 @@ Lite 持续演进中，开发与分发时关注以下维度（具体版本号见
 
 ## 可配套阅读
 
-- `xlwings-lite/`（官方文档离线镜像 + README 索引 + 插图，至 1.0.0.114，含 wingman/settings/beta/custom-app）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
+- `xlwings-lite/`（官方文档离线镜像 + README 索引 + 插图，含 wingman/settings/beta/custom-app/plugins 一键安装）——本文件的逐阶段语义引用源，官方教程层次（入门/进阶/分发/自托管/参考）见 README"建议阅读顺序"；
 - `xlwings/xlwings/udfs.py`——`@func`/`@arg`/`@ret`/`@script` 装饰器实现（Lite 与桌面版同源，3.1/3.2 源码验证）；
 - `xlwings/xlwings/ext/`（sql.py + __init__.py）——`=SQL()` 扩展源码（3.5）；
 - `xlwings-sqlookup/`（`src/xlwings_sqlookup/functions.py`、`scripts.py` 与 App Mode 页 `index.html`/`app.js`/`style.css`、`pyproject.toml` 的 `xlwings_lite` 双入口、`tests/test_functions.py`）——`=SQLOOKUP` 官方插件源码，Lite 插件 + 自定义 App Mode 页的完整样例（3.5）；

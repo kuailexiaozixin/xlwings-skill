@@ -7,8 +7,8 @@
       "repo": "xlwings/xlwings",
       "ref": "main",
       "subpath": "",
-      "pinned_sha": "a8b630153f1fbfd5efccf69aa6a4b5e14cb172df",
-      "last_synced": "2026-11-25"
+      "pinned_sha": "62cbd08391b121af60ab95219ccffa3779445ad1",
+      "last_synced": "2026-11-27"
     },
     {
       "id": "xlwings-server",
@@ -28,9 +28,9 @@
       "base_url": "https://lite.xlwings.org/",
       "llms_url": "https://lite.xlwings.org/llms-full.txt",
       "index_url": "https://lite.xlwings.org/llms.txt",
-      "pinned_version": "1.0.0.114",
-      "pinned_full_sha": "55926acfdc32d24d36d296ba8c9aa922b403ffe08e39132560b73881f29d40c3",
-      "last_synced": "2026-11-26",
+      "pinned_version": "1.0.0.115",
+      "pinned_full_sha": "61394c8a755ea7a083e98150c853b4a1b31ebd59e8969e00b3cc7dd18f037d26",
+      "last_synced": "2026-11-27",
       "pinned_pages": [
         "about.md",
         "app-mode.md",
@@ -68,7 +68,8 @@
         "troubleshooting.md",
         "web-requests.md",
         "wingman.md"
-      ]
+      ],
+      "pinned_local_sha256": "d7dc2a544437ab5e770486e19725fd03d1f5b906fa7ec69bffa52a6492964288"
     },
     {
       "id": "xlwings-sqlookup",

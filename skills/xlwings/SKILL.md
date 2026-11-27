@@ -73,7 +73,7 @@ license: MIT
 
 | 目录 | 用途 | 加载时机 |
 |------|------|---------|
-| `references/` | 17 份文档（00 索引 + 16 篇扩展指南：01-10 工作流各阶段深度 + 11 场景A + 12 MCP 自动化 + 13 场景D + 14 Server + 15 Lite + 16 Office.js）。进入 references 前先读 `references/00-index.md` 决策索引 | 进入对应阶段需要深度扩展时按需读取 |
+| `references/` | 00 索引 + 工作流各阶段深度指南 + 场景 A/MCP/D + Server/Lite/Office.js 专题。进入 references 前先读 `references/00-index.md` 决策索引 | 进入对应阶段需要深度扩展时按需读取 |
 | `templates/` | 代码模板（VBA 模块、Ribbon XML、Python 桥接、UDF、面板入口、测试、安装脚本） | 编码阶段直接复制使用 |
 | `scripts/` | 可执行脚本（门禁 12 个、构建脚本、配置激活、路由校验、release_tool 分发工具链） | 工作流各步门禁与构建时调用 |
 | `docs/` | 坑点沉淀（`troubleshooting.md`，持续追加）与 Python/面板专项排查（`troubleshooting-python.md`） | 遇到问题时查阅 |
@@ -138,7 +138,7 @@ import xlwings as xw
 ### 3.2 依赖与环境
 
 - Windows 推荐：`scripts/ensure_uv_env.ps1` 创建 uv 虚拟环境
-- 核心依赖：`xlwings==0.37.4`、`pywin32`（Windows COM）
+- 核心依赖：`xlwings`、`pywin32`（Windows COM）
 - 面板依赖：`pywebview`、`python-fasthtml`、`uvicorn`
 - 测试依赖：`pytest`、`pytest-cov`
 
@@ -209,7 +209,7 @@ import xlwings as xw
 
 `xlwings-demo-master` 社区版部分（basics/correlation/frozen/interactive/performance/simulation/testing）的文件级用途详展见 `references/11-scenario-a-python-automation.md` 七章 7.7（PRO 部分见 13-scenario-d 四章 PRO 案例研读）。
 
-完整案例索引（12 个案例按工作流环节分类）见 `references/11-scenario-a-python-automation.md` 附录。
+完整案例索引（按工作流环节分类）见 `references/11-scenario-a-python-automation.md` 附录。
 
 ### 4.4 MCP 自动化（场景 A 的协议封装通道）
 
@@ -218,10 +218,10 @@ import xlwings as xw
 **工作流**：需求判定 → 环境准备 → 选型安装 → 客户端配置 → 安全加固 → 测试验证 → 故障排查
 
 1. **需求判定**：如果只是 Python 脚本自动化，走 4.1 主线，避免 MCP 协议额外复杂度。需要 MCP 的典型特征：AI Agent 需通过对话操作 Excel、多个 Agent 共享 Excel 操作能力、需将 Excel 工具接入 MCP 生态。
-2. **环境准备**：Windows + Microsoft Excel（4 个社区 Server 均通过 xlwings COM 驱动 Excel，不支持 headless）；Python 3.10+；非 Windows 仅 vohoailinh90 提供 MockOpenpyxlBackend 用于开发测试。
+2. **环境准备**：Windows + Microsoft Excel（社区 Server 均通过 xlwings COM 驱动 Excel，不支持 headless）；Python 3.10+；非 Windows 仅 vohoailinh90 提供 MockOpenpyxlBackend 用于开发测试。
 3. **选型安装**：根据需求特征选择社区 MCP Server（本技能 `MCP-Server/` 目录内置 4 个，各项目的依赖、入口命令、工具清单与源码模块逐一详解见 `references/12-scenario-a-mcp-automation.md` 第二节）：
-   - **快速验证 / DRM 加密文件** → geniuskey/mcp-server-xlwings（v0.4.1，`uvx mcp-server-xlwings` 一键启动，支持 DRM 保护文件、读取用户当前选区）
-   - **生产环境 / 功能最全** → hyunjae-labs/xlwings-mcp-server（v1.0.4，`pip install xlwings-mcp-server`，会话式架构 + 线程安全 + 图表支持，20 个源码模块）
+   - **快速验证 / DRM 加密文件** → geniuskey/mcp-server-xlwings（`uvx mcp-server-xlwings` 一键启动，支持 DRM 保护文件、读取用户当前选区）
+   - **生产环境 / 功能最全** → hyunjae-labs/xlwings-mcp-server（`pip install xlwings-mcp-server`，会话式架构 + 线程安全 + 图表支持）
    - **VBA 宏为核心** → prabodh-hydexcel/excel-mcp（`python server.py`，连接实时 Excel，支持宏执行与命名区域）
    - **宏安全 / 跨平台开发** → vohoailinh90/Excel_MCP_Server（`python server.py`，VBA 宏白名单 `EXCEL_MCP_ALLOWED_MACROS`，专用 COM 线程解决 STA，非 Windows 用 Mock backend 开发测试）
 4. **客户端配置**：在 MCP 客户端配置文件中注册 Server（stdio 传输）。Claude Desktop 编辑 `%APPDATA%\Claude\claude_desktop_config.json`；Claude Code 用 `claude mcp add`；Roo Code 用 `.roo/mcp.json`。command 指向 Python 解释器或 `uvx`，args 指向入口模块或脚本。三种客户端的完整配置 JSON 模板见 `references/12-scenario-a-mcp-automation.md` 第五节。
@@ -242,7 +242,7 @@ import xlwings as xw
 | 通道 | 定位 | 参考文档 | 关键资源 |
 |------|------|---------|---------|
 | xlwings Server | 服务端运行时（FastAPI + Socket.IO + Redis），Office.js 加载项后端 | `references/14-xlwings-server-guidance.md` | `xlwings-server/`（docs 教程 + xlwings_server 包 + deployment/nginx/scripts/tests） |
-| xlwings Lite | 浏览器端运行时（Pyodide/WASM），免费自包含 | `references/15-xlwings-lite-guidance.md` | `xlwings-lite/`（官方文档镜像，至 1.0.0.114，含 wingman/settings/beta/custom-app）+ taxi-duckdb 案例 + `xlwings-sqlookup/` 官方插件源码（`SQLOOKUP` 单元格级 SQL 查询 + 自带 App Mode 示例页） |
+| xlwings Lite | 浏览器端运行时（Pyodide/WASM），免费自包含 | `references/15-xlwings-lite-guidance.md` | `xlwings-lite/`（官方文档镜像，含 wingman/settings/beta/custom-app/plugins 一键安装）+ taxi-duckdb 案例 + `xlwings-sqlookup/` 官方插件源码（`SQLOOKUP` 单元格级 SQL 查询 + 自带 App Mode 示例页） |
 | Office.js 引擎 | 客户端引擎（值转换层 + UDF/脚本全链路），Server 与 Lite 共享的语义内核 | `references/16-xlwings-officejs.md` | `xlwings/xlwings/pro/_xlofficejs.py` + `udfs_officejs.py` |
 
 **工作流**：
@@ -355,14 +355,14 @@ import xlwings as xw
 
 **操作**：
 1. 创建虚拟环境：`scripts/ensure_uv_env.ps1`（Windows 推荐）
-2. 安装依赖：`xlwings==0.37.4`、`pywin32`、面板/测试按需
+2. 安装依赖：`xlwings`、`pywin32`、面板/测试按需
 3. 验证本地源码注入：`python -c "import sys; sys.path.insert(0,'xlwings'); import xlwings; print(xlwings.__file__)"`，输出的路径应落在技能根目录内（`__version__` 在源码里恒为 `0.0.0`，不能用它判断，见 3.1）
 4. 配置 COM 权限：Excel 信任中心 → 启用「对 VBA 项目对象模型的访问」（AccessVBOM）——白标 xlam UDF 导入必需
 5. 验证 COM 可用：`python -c "import xlwings as xw; app=xw.App(visible=False); print(app.api.Version); app.quit()"`
 
 **环境就绪清单**（6 项全部通过才进入下一步）：
 - [ ] Python 解释器可用（3.10+）
-- [ ] xlwings 0.37.4 源码注入成功
+- [ ] xlwings 源码注入成功
 - [ ] pywin32 安装，COM 可创建 Excel 实例
 - [ ] AccessVBOM 已启用
 - [ ] WPS/Excel 信任中心已配置（宏启用）

@@ -60,7 +60,7 @@
 
 选型判据：目标机无 Python 且多人 / 浏览器 / 在线协作 → Server 路线（本手册）；单机离线、VBA 生态、需要桌面 UDF/Ribbon 体验 → 场景 C。二者都涉及 UDF（本地 vs Server 自定义函数）、Ribbon（本地 vs manifest 命令）、安装（XLSTART vs 加载项分发），但实现通道完全不同，互不替代。
 
-**版本基准**：本手册跟踪上游 `main` 分支（技能 manifest 锁定 `main`，本快照对应 `docs/changelog.md` 最新条目 1.20.2（2026-11-20））。`xlwings_server/__init__.py` 的 `__version__` 在 zip 快照中为 `0.0.0`（真实版本以 `docs/changelog.md` 为准），`docs/changelog.md`、`docs/migration.md` 是版本与升级事实的唯一权威。
+**版本基准**：本手册跟踪上游 `main` 分支；`xlwings_server/__init__.py` 的 `__version__` 在 zip 快照中为 `0.0.0`，真实版本以 `docs/changelog.md` 为准，`docs/changelog.md`、`docs/migration.md` 是版本与升级事实的唯一权威。
 
 **许可提示**：source-available 双许可（PolyForm Noncommercial / PRO EULA，见 `LICENSE.md`）——仅供源码研读借鉴设计，不部署、不抄码。
 **加载项三件套就绪检查（发布前门禁）**：
@@ -142,6 +142,7 @@
 - **通信方式**：HTTP REST API；对象操作经 `append_json_action` 打包为 JSON 动作（`func`/`args`/`values`/`sheet_position` 等）累积在 `_json["actions"]`，随请求一并发送服务端执行
 - **对象覆盖**：Apps/App/Books/Book/Sheets/Sheet/Range/Names/Name/Pictures/Shapes/Charts/Characters/Note/PageSetup/Border/Borders/Font/FreezePanes/Table/Tables——与桌面引擎同构的高层 API，脚本代码无需感知通道差异
 - **lazy load**：`_SHEET_VALUES_LOADED_KEY = "_xlwings_values_loaded"` 标记 sheet 值是否已加载（元数据先加载、值按需获取）；该标记仅本地读取，不序列化回 JS
+- **metadata-only load 的新 sheet 占位**：未加载 values 时，`_xlremote` 为本 Book 尚不知道的 sheet 写入 `values: [[]]` 空占位（与 `Sheets.add()` 一致），使写入立即可用；读取仍需要求加载该 sheet 的 values
 - **元数据刷新**：`_update_api_in_place` 就地更新 API dict 并保留嵌套 dict 引用（Sheet/Name 对象持有引用，刷新后可见新值）
 - **Office.js 协议映射**：`_CALCULATION_PY2JS`/`_CALCULATION_JS2JS`（xlwings `semiautomatic` → Office.js `AutomaticExceptTables`）；`_color_to_hex()` 把 RGB 元组/hex 串/整数统一为 `#RRGGBB`（`None` 透传 = 无填充）
 - **版本校验**：客户端 `api["version"]` 与服务端 `__version__` 不一致时报错——两端必须同版本部署
@@ -180,11 +181,11 @@
 
 ### 2.4 步骤：配置体系（`docs/server_config.md` ↔ `xlwings_server/config.py`）
 
-**源码事实**：`config.py` 用 pydantic-settings 定义 `Settings`（46 个字段），`settings_customise_sources` 实现优先级，`_create_settings()` 支持项目级覆盖，`jsconfig` computed 字段向前端注入运行配置。
+**源码事实**：`config.py` 用 pydantic-settings 定义 `Settings`，`settings_customise_sources` 实现优先级，`_create_settings()` 支持项目级覆盖，`jsconfig` computed 字段向前端注入运行配置。
 
 - **配置源优先级**（源码顺序，高→低）：`Settings()` 初始化参数 > 环境变量（`XLWINGS_*`）> `.env` 文件 > `pyproject.toml [tool.xlwings_server]` > secret 文件
 - **pyproject 键大小写不敏感**：`CaseInsensitivePyprojectTomlSource` 归一化键名并可带/不带前缀（`environment`/`ENVIRONMENT`/`XLWINGS_ENVIRONMENT` 均有效）
-- **46 个设置字段按功能分组**（默认值以源码为准）：
+- **设置字段按功能分组**（默认值以源码为准）：
   - 环境与身份：`environment`（默认 `prod`）、`license_key`、`hostname`、`project_name`、`functions_namespace`（默认 `XLWINGS`）、`xlwings_version`
   - 对象缓存：`object_cache_url`（生产必须）、`object_cache_expire_at`（默认 `0 12 * * sat`）、`object_cache_enable_compression`（默认 true）、`object_cache_maxsize`（默认 1000，仅内存 LRU 用）、`object_cache_partition_by_user`（默认 false）
   - 认证：`auth_providers`（默认空 = 匿名）、`auth_required_roles`、`auth_entraid_client_id` / `tenant_id` / `client_secret` / `multitenant` / `token_scopes`
@@ -194,7 +195,7 @@
   - 安全：`add_security_headers`（默认 true）、`custom_headers`、`cors_allow_origins`（默认空）、`enable_excel_online`（默认 true）、`log_level`（默认 INFO）
   - 静态与 CDN：`cdn_officejs`（默认 false）、`pyodide_base_url`、`static_url_path`、`app_path`
   - 示例与开发：`enable_examples`（默认 false）、`enable_hotreload`（默认 true）、`enable_tests`、`enable_wasm`
-  - manifest：`manifest_id_{dev,qa,uat,staging,prod}`（5 个环境 UUID，init 时生成）
+  - manifest：`manifest_id_{dev,qa,uat,staging,prod}`（各环境 UUID，init 时生成）
   - 其他：`request_timeout`（默认 300s）、`secret_key`、`date_format`、`is_official_lite_addin`、`base_dir`
 - **jsconfig 前端注入**：`jsconfig` computed 字段打包 appPath / authProviders / customFunctionsMaxRetries / customFunctionsRetryCodes / environment / isOfficialLiteAddin / pyodideBaseUrl / taskpaneReloadAttempts / onWasm / requestTimeout / xlwingsVersion——前端 `xlwings.js` 的运行配置即来自此（对应教程" + E + "模板中 `settings` 自动注入" + Q + "）
 - **启动前序**：模块导入即写 `os.environ["XLWINGS_ON_SERVER"]="true"`；`PROJECT_DIR` 从 `XLWINGS_PROJECT_DIR` 或 cwd 解析并前置进 `sys.path`（config.py 与 main.py 双处执行——config 可能先于 main.py 被 custom_functions 导入）
@@ -406,7 +407,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 |------|------|--------|
 | `pivot-identity.js` | 透视表身份定位：`selectPivotTable(items, index, id, name)` | **id/name 双轨解析**：优先 `id`（实时簿元数据），退化按 `name`（本地新建透视表在下次 book load 前无 id，name 即身份），再退化按 `index`（兼容旧 action payload）；找不到抛 `pivot_table_not_found` |
 | `pivot-range-read.js` | 读取透视表范围地址：`createGetPivotTableRangeAddress(run, isSupported)` 工厂 | 参数校验严格（sheetName 字符串、pivotIndex 非负整数、id/name 至少一个、kind ∈ {`report`, `data_body`}），错误带 `invalid_pivot_table_read` 等错误码；经 `unqualifiedAddress` 归一地址 |
-| `range-action-callbacks.js` | **range 动作的 Office.js 执行器**：`createSetValues`、`createSetFormula`（1.20.1 起内置 `bracketCurrentRowReferences()`：公式中 Excel 表当前行简写 `[@Column]` 会被 Office.js 拒绝，写入前自动改写为等价的 `[@[Column]]`；字符串字面量/带引号表名/显式 `[@[Column]]` 及 `#This Row` 等结构引用原样透传）、`createSetFormulaArray`/条件格式/边框等 range 动作回调 | 公式归一化是 1.20.1 的实质行为变更：任务窗格写含 `[@列名]` 简写的公式不会再触发 Office.js 拒绝 |
+| `range-action-callbacks.js` | **range 动作的 Office.js 执行器**：`createSetValues`、`createSetFormula`（内置 `bracketCurrentRowReferences()`：公式中 Excel 表当前行简写 `[@Column]` 会被 Office.js 拒绝，写入前自动改写为等价的 `[@[Column]]`；字符串字面量/带引号表名/显式 `[@[Column]]` 及 `#This Row` 等结构引用原样透传）、`createSetFormulaArray`/条件格式/边框等 range 动作回调 | 公式归一化是当前实现的实质行为：任务窗格写含 `[@列名]` 简写的公式不会再触发 Office.js 拒绝 |
 | `pivot-action-callbacks.js` | **Python 侧 pivot 动作的 Office.js 执行器**：`createAddPivotTable`（含选区保存/恢复）、`createSetPivotTableName`、`createAdd/RemovePivotField`（rows/columns/filters 三区）、`createAdd/Set/RemovePivotValueField`（值字段按 dataHierarchies **索引**寻址——caption 会本地化改名，索引才是稳定句柄）、`createSetPivotLayout`、`createRefreshPivotTable`、`createDeletePivotTable` + `pivotTableFromAction` 身份守卫 | 工厂模式与 chart 回调一致：接收 resolver 返回 `(context, action)` 回调，由 `dispatchActions` 按 func 名注册 |
 
 **配套变化**：`custom-scripts/index.js` 将 `getPivotTableRangeAddress` 等挂入 `globalThis.xlwings` 命名空间（与 `getComments`/`getTableRowRangeAddress` 等并列）；`tests/js/pivot-*.test.js` 三个 JS 测试覆盖身份解析与范围读取。**客户端侧**仅 xlwings Lite（Pyodide/emscripten）经 `js.xlwings.getPivotTableRangeAddress` 直调（remote 引擎同步 `range`/`data_body_range` 仍不支持）；Server 场景服务端 Python 无此读取通道。两端的动作执行（建/改/删/刷新）与范围读取构成同一 wire 协议，客户端 API 见 13 号 1.2.3。
@@ -424,7 +425,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 
 - **任务窗格路由**（`routers/taskpane.py`）：`GET /taskpane` 与 `GET /taskpane.html` 渲染 `taskpane_html` 设置指定的模板——前端入口是独立路由而非静态文件，因此可注入 `settings` 与认证上下文
 
-### 5.4 任务窗格示例（`xlwings_server/templates/examples/` 9 个）
+### 5.4 任务窗格示例（`xlwings_server/templates/examples/`）
 
 - `hello_world`：最小按钮 + 脚本
 - `htmx_form`：表单 POST + 局部渲染（`_greeting.html`）
@@ -691,7 +692,7 @@ xlwings Server 在前端集成层内置了一组**透视表支撑脚本**（非�
 - 不再“fork 官方仓库 + merge upstream”，故无 `git fetch upstream`/`git merge`/`python run.py deps compile` 这套仓库形态流程（已随 v1.0 移除，`run.py` 现存子命令仅 `init`/`wasm`）
 - pre-1.0 仓库形态 → v1.0 包形态迁移按 `docs/migration.md`：新目录 `uv add xlwings-server` + `uv run xlwings-server init .` + `uv run xlwings-server migrate <旧项目路径>`，逐项迁回依赖/静态文件/config/auth/router/jwks
 
-**版本事实**：`docs/changelog.md` 为版本权威（本手册基准 1.20.2，2026-11-20，快照 commit 4f6511b）；技能侧 19 路上游 manifest 锁定 `main`（其中 xlwings-lite 为 web 源），升级时同步刷新本手册与 13-d 中的版本引用。
+**版本事实**：`docs/changelog.md` 为版本权威；技能上游 manifest 锁定跟踪源，升级时同步刷新本手册与 13-d 中的行为描述。
 
 **平台维护责任**：Azure Functions 的 host 运行时版本与 Python EOL 需人工跟踪（`docs/azure_functions.md` 明确列出跟踪项）。
 

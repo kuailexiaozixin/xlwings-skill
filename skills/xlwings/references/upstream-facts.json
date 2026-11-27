@@ -1,12 +1,5 @@
 ﻿{
-  "_comment": "自研文档对上游的结构存在性锚点（不再追踪行数/KB/篇数/页/张/文件数/行号等易变计数——见 SKILL §0：文档不引用上游不稳定计数）。snapshot 记录各源已同步到的 commit/版本，updated 为最近同步日。",
-  "updated": "2026-11-26",
-  "snapshot": {
-    "xlwings": "a8b6301",
-    "xlwings-server": "4f6511b",
-    "xlwings-lite": "1.0.0.114",
-    "xlwings-sqlookup": "cf20fd2"
-  },
+  "_comment": "自研文档对上游的结构存在性锚点。只记录稳定的文件/类/符号存在性；不记录版本号、commit、行数、KB、篇数、页数、文件数等易变信息。",
   "facts": [
     {
       "id": "bookasync-doc-exists",
@@ -15,7 +8,27 @@
       "kind": "exists",
       "value": true,
       "docs": [
-        "references/15-xlwings-lite-guidance.md:753"
+        "references/15-xlwings-lite-guidance.md"
+      ]
+    },
+    {
+      "id": "lite-plugins-page-exists",
+      "source": "xlwings-lite",
+      "file": "plugins.md",
+      "kind": "exists",
+      "value": true,
+      "docs": [
+        "references/15-xlwings-lite-guidance.md"
+      ]
+    },
+    {
+      "id": "remote-metadata-new-sheet-placeholder",
+      "source": "xlwings",
+      "file": "xlwings/pro/_xlremote.py",
+      "kind": "exists",
+      "value": true,
+      "docs": [
+        "references/14-xlwings-server-guidance.md"
       ]
     }
   ]

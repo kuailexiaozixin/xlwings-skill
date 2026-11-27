@@ -1,6 +1,6 @@
 # references 决策索引（先读这个）
 
-本目录共 16 篇知识文档 + 本索引，**文档顺序 = 工作流顺序**（01→10 对应场景 C 6.5.1→6.5.13，11→13 对应场景 A/MCP/D，14→16 为 Web 三通道：Server / Lite / Office.js）。内容源自五个权威源：`xlwings/docs/`（官方 Python/加载项文档）、`../VBA-Docs/`（微软官方 VBA 文档）、`examples/`（xlwings 官方示例）、`MCP-Server/`（4 个社区 xlwings MCP Server 源码）、`xlwings-sqlookup/`（官方 Lite 插件 `=SQLOOKUP` 源码）。与 xlwings 无关的内容已全部去除。
+本目录为知识文档索引，**文档顺序 = 工作流顺序**（01→10 对应场景 C 6.5.1→6.5.13，11→13 对应场景 A/MCP/D，14→16 为 Web 三通道：Server / Lite / Office.js）。内容源自五个权威源：`xlwings/docs/`（官方 Python/加载项文档）、`../VBA-Docs/`（微软官方 VBA 文档）、`examples/`（xlwings 官方示例）、`MCP-Server/`（社区 xlwings MCP Server 源码）、`xlwings-sqlookup/`（官方 Lite 插件 `=SQLOOKUP` 源码）。与 xlwings 无关的内容已全部去除。
 
 ## 文档地图（顺序 = 工作流）
 
@@ -18,7 +18,7 @@
 | 09 | `09-testing-debugging-guidance.md` | 6.5.9 单元测试 + 6.5.12 集成验证 | TDD 理念 + COM 冒烟 + 真机验证 + 调试 |
 | 10 | `10-deployment-delivery.md` | 6.5.10/11 构建打包与交付 | 部署与交付工作流（选型→打包→代码嵌入→配置表→门禁验证→交付清单）；主线自研 release_tool 便携运行时分发；附录 A = PRO 部署机制（code embed/release）对照研读（原 13-d 1.4 迁入）；附录 B 官方文档映射 |
 | 11 | `11-scenario-a-python-automation.md` | 场景 A 主线 | 连接/导航/读写/格式化/图表图片形状表格 + API 参考导航 + 社区版案例详展（quickstart/自动化测试/质检/双端/PQ/Eikon） |
-| 12 | `12-scenario-a-mcp-automation.md` | 场景 A 4.4（MCP 自动化）深度扩展 | 4 个社区 xlwings MCP Server 逐一详解 + 工具清单 + 安装配置 + 安全注意 + 故障排查 |
+| 12 | `12-scenario-a-mcp-automation.md` | 场景 A 4.4（MCP 自动化）深度扩展 | 社区 xlwings MCP Server 逐一详解 + 工具清单 + 安装配置 + 安全注意 + 故障排查 |
 | 13 | `13-scenario-d-source-code.md` | 场景 D 深度扩展 | xlwings PRO 深度技术分析（许可证/四引擎/Reports/部署）、入门学习执行步骤、案例总览与 PRO 案例研读（社区版案例详展在 11 场景 A references；1.7 已指针化） |
 | 14 | `14-xlwings-server-guidance.md` | 场景 B（Web/服务化）· xlwings Server | xlwings Server 独立参考手册：开发生命周期工作流（预研选型→初始化→扩展机制→自定义函数/脚本→认证安全→测试调试→部署运维升级），六块全覆盖（docs 教程 / xlwings_server 包 / deployment / nginx / scripts / tests） |
 | 15 | `15-xlwings-lite-guidance.md` | 场景 B（Web/服务化）· xlwings Lite | xlwings Lite 独立参考手册：开发生命周期工作流（认知选型→环境准备→核心开发→测试调试→应用化分发→自托管部署→案例研读），开发节按官方教程层次编排（入门组：函数/脚本/Notebooks；进阶组：依赖/数据库/Web/异步/绘图；个人模块收尾），每节含"源码验证"块；覆盖官方文档镜像 xlwings-lite 语义引用 + Lite 相关源码研读（ext/sql.py、BookAsync、base_classes 异步方法族、ObjectHandle/WithScript、udfs_officejs Lite 分支：JsNull/streaming_callback/_lazy）+ taxi-duckdb 完整案例（原 13-d 1.6/4.5 与 1.8 Lite 适配分支均已迁入并指针化）+ `xlwings-sqlookup/` 官方插件（3.5 `=SQLOOKUP`） |
@@ -102,7 +102,7 @@
 | `12-scenario-a-mcp-automation.md` | SKILL.md、references/00-index.md |
 | `13-scenario-d-source-code.md` | SKILL.md、references/00-index.md、references/04-python-guidance（案例路由）、references/07-udf-guidance（案例路由）、references/11-scenario-a（案例路由）、references/15-xlwings-lite-guidance（Lite 内容已迁出：1.6/4.5 指针 + 1.8 Lite 适配分支指针）、references/16-xlwings-officejs（Office.js 引擎内容已迁出：1.2.5/1.8 指针） |
 | `14-xlwings-server-guidance.md` | SKILL.md（5 章场景 B、7.4/7.5/7.6）、references/00-index.md、references/13-scenario-d（1.7 指针）、references/15-xlwings-lite-guidance（导航） |
-| `15-xlwings-lite-guidance.md` | SKILL.md（5 章场景 B、7.1 taxi 案例、7.4 PRO 研读、7.6 总览）、references/00-index.md、references/13-scenario-d（1.6/4.5 指针）、xlwings-lite（官方文档镜像，至 1.0.0.113）、xlwings-sqlookup（3.5 插件小节） |
+| `15-xlwings-lite-guidance.md` | SKILL.md（5 章场景 B、7.1 taxi 案例、7.4 PRO 研读、7.6 总览）、references/00-index.md、references/13-scenario-d（1.6/4.5 指针）、xlwings-lite（官方文档镜像，含插件一键安装）、xlwings-sqlookup（3.5 插件小节） |
 | `16-xlwings-officejs.md` | SKILL.md（5 章场景 B、7.4/7.5）、references/00-index.md、references/13-scenario-d（1.2.5/1.8 指针）、references/15-xlwings-lite-guidance（Lite 适配分支导航） |
 
 **核查命令**（重构后执行）：
