@@ -152,3 +152,8 @@
 > 2026-11-26 `xlwings-lite` 同步审计（web 源，`1.0.0.113`→`1.0.0.114`，页面结构不变、无新增图）：上游三处功能新增——① **新建工作簿不再自动加载示例代码与 `requirements.txt`**（存量工作簿不受影响；如用 pandas 等依赖需先写入 `requirements.txt`）；② **正式支持 pytest-asyncio**（异步测试）；③ **插件支持自定义应用**（custom app 可作插件形式分发）。自研同步：SKILL.md L245 资源地图、references/15 L15/L769 内容来源、xlwings-lite/README.md 抓取行 + custom-app 索引行，版本基准 113→114；语义补充：references/15 quickstart 段补「新建工作簿行为」注、4.1 异步测试 bullet 改为 pytest-asyncio、5.1 Custom App bullet 补「亦支持插件分发」。按写作纪律未写任何计数/行号。`track_upstream.py` 复跑 PASS（线① 19 源全 OK、线② 1 锚点一致、线③ PASS）。
 | 2026-11-27 | `xlwings` | incremental（2 处变更） | `62cbd08` | 457 个文件 |
 | 2026-11-27 | `xlwings-lite` | web(新图 0) | `1.0.0.115` | 36 页 / 79 文件 |
+| 2026-11-28 | `xlwings` | codeload | `9bc850b` | 457 个文件 |
+| 2026-11-28 | `xlwings-server` | codeload | `e3728ef` | 429 个文件 |
+> 2026-11-28 两批同步审计（补齐 11-27 未发布批 + 11-28 本轮，均经 `track_upstream.py` 复核 PASS）：
+> **11-27 批（当时仅同步、未审计未发布）**：① `xlwings` 主仓 incremental（`a8b6301`→`62cbd08`）——lazy load 元数据先载时新 sheet 给空 values 占位、`DataValidation` 增 `__repr__`（bug 修复级）；② `xlwings-lite`（web）`1.0.0.114`→`1.0.0.115`——**插件可经主菜单 > Plugins 一键安装，自带 custom app 的插件安装后自动打开 App Mode**。该轮自研侧：SKILL.md/ref15 的移动版本基准剥离为功能表述，`references/upstream-facts.json` 新增 2 条稳定存在性锚点（`lite-plugins-page-exists`、`remote-metadata-new-sheet-placeholder`，快照版本字段一并剥离）。
+> **11-28 批（本轮）**：① `xlwings` 主仓 `62cbd08`→`9bc850b`——复制 sheet 时移除来源 pivot IDs（bug 修复级）；② `xlwings-server` `4f6511b`→`e3728ef`——`getBookData` 增返 sheet ID，改名后匹配更稳（changelog 最新发行版仍 1.20.2，此提交属发行后 main 增量）。本轮文档改动仅 `xlwings-lite/README.md`：抓取历史行补 1.0.0.115、plugins 行补一键安装、custom-app 行补自动开 App Mode；主仓/server 均为 bug 修复级、无失效断言，不动文档。三线复跑 PASS（线① 19 源全 OK、线② 3 锚点全一致、线③ PASS）。

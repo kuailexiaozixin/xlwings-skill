@@ -1,7 +1,7 @@
 # xlwings Lite 官方教程文档
 
 > 本目录为 https://lite.xlwings.org/ 官方文档的完整离线镜像（36 页 + 42 张插图），已整理为 Markdown 格式。
-> 抓取/更新：2026-09-15 首版（至 1.0.0.103）；2026-11-06 由 `scripts/sync_upstream.py`（web 源，`scripts/web_mirror.py`）重建于 1.0.0.105，新增 wingman / settings / beta 三页与 5 张 Wingman 截图；2026-11-20 重建至 1.0.0.112（新增 plugins 页 + 2 张插图，共 35 页）；2026-11-25 重建至 1.0.0.113（新增 custom-app 页 + 1 张插图，共 36 页）；2026-11-26 重建至 1.0.0.114（页面结构不变、无新增图）。原站为 Sphinx 文档站，本文档已去除导航/页脚等模板噪声，站内链接互转相对路径，图片存放于 `_images/`。
+> 抓取/更新：2026-09-15 首版（至 1.0.0.103）；2026-11-06 由 `scripts/sync_upstream.py`（web 源，`scripts/web_mirror.py`）重建于 1.0.0.105，新增 wingman / settings / beta 三页与 5 张 Wingman 截图；2026-11-20 重建至 1.0.0.112（新增 plugins 页 + 2 张插图，共 35 页）；2026-11-25 重建至 1.0.0.113（新增 custom-app 页 + 1 张插图，共 36 页）；2026-11-26 重建至 1.0.0.114（页面结构不变、无新增图）；2026-11-27 重建至 1.0.0.115（页面结构不变、无新增图；新增插件一键安装与 custom app 插件自动打开 App Mode）。原站为 Sphinx 文档站，本文档已去除导航/页脚等模板噪声，站内链接互转相对路径，图片存放于 `_images/`。
 
 ## 内容索引
 
@@ -15,14 +15,14 @@
 | [xlwings Wingman](wingman.md) | xlwings Wingman（内置 AI 编码智能体：直接改写工作簿并生成可复用的 Python 脚本/函数/笔记本，可连自托管 LLM；1.0.0.105 起） |
 | [Settings](settings.md) | 设置（xlwings Lite 菜单 > Settings 的行为配置） |
 | [xlwings Wingman Beta](beta.md) | xlwings Wingman Beta（Beta 内测说明） |
-| [plugins（插件）](plugins.md) | 插件（Python 包自动注册脚本 / 自定义函数，1.0.0.112 起） |
+| [plugins（插件）](plugins.md) | 插件（Python 包自动注册脚本 / 自定义函数，1.0.0.112 起；1.0.0.115 起主菜单 > Plugins 一键安装） |
 | [dependencies](dependencies.md) | 依赖安装（requirements.txt、第三方库） |
 | [databases](databases.md) | 数据库（SQLite/PostgreSQL/MySQL/DuckDB 等） |
 | [web-requests](web-requests.md) | Web 请求（fetch 外部 API） |
 | [async-api（异步 API）](async-api.md) | 异步 API（await 语法） |
 | [plotting](plotting.md) | 绘图（Matplotlib/Plotly/Bokeh/Altair） |
 | [app-mode（App Mode）](app-mode.md) | App Mode（将工作簿变为面向终端用户的应用） |
-| [custom-app（自定义应用）](custom-app.md) | 自定义应用（用自有 HTML/CSS/JS 页替换 App Mode 默认按钮/表单，`xlwings.runScript()` 调 Python；1.0.0.113 起；1.0.0.114 起亦支持以插件形式分发） |
+| [custom-app（自定义应用）](custom-app.md) | 自定义应用（用自有 HTML/CSS/JS 页替换 App Mode 默认按钮/表单，`xlwings.runScript()` 调 Python；1.0.0.113 起；1.0.0.114 起亦支持以插件形式分发；1.0.0.115 起自带 custom app 的插件安装后自动打开 App Mode） |
 | [personal-modules（个人模块）](personal-modules.md) | 个人模块（跨工作簿共享代码，类似 Personal.xlsb） |
 | [files](files.md) | 文件（导入导出、云盘挂载） |
 | [editor](editor.md) | 编辑器（VS Code 内核、快捷键、自动补全） |
